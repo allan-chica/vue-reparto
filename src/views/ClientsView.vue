@@ -24,7 +24,8 @@
           <Button size="icon" variant="outline" @click="router.push(`/clients/edit/${client.id}`)">
             <Pencil />
           </Button>
-          <Button size="icon" variant="destructive" @click="deleteClient(client.id)">
+
+          <Button size="icon" variant="destructive" @click="dialogDelete(client)">
             <Trash2 />
           </Button>
         </div>
@@ -32,11 +33,49 @@
     </ul>
 
   </div>
+
+  <AlertDialog v-model:open="openDialog">
+    <AlertDialogTrigger as-child>
+
+    </AlertDialogTrigger>
+
+    <AlertDialogContent>
+
+      <!-- Dialog header -->
+      <AlertDialogHeader>
+        <AlertDialogTitle>Eliminar cliente</AlertDialogTitle>
+        <AlertDialogDescription>
+          ¿Estas seguro que querés eliminar el cliente <b>{{ clientToDelete.name }}</b>? Esto no se podrá recuperar.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+
+      <!-- Dialog footer -->
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+        <AlertDialogAction @click="deleteClient(clientToDelete.id)">
+          Eliminar
+        </AlertDialogAction>
+      </AlertDialogFooter>
+
+    </AlertDialogContent>
+
+  </AlertDialog>
 </template>
 
 <script setup>
 import { onMounted, computed, ref } from 'vue'
 import { useClientsStore } from '@/stores/clients'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2, Search } from 'lucide-vue-next'
@@ -47,6 +86,8 @@ const router = useRouter()
 const searchQuery = ref('')
 
 const clients = computed(() => store.clients)
+const openDialog = ref(false)
+const clientToDelete = ref(null)
 
 const filteredClients = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
@@ -60,6 +101,11 @@ const filteredClients = computed(() => {
     a.name.toLowerCase().localeCompare(b.name.toLowerCase())
   )
 })
+
+const dialogDelete = client => {
+  clientToDelete.value = client
+  openDialog.value = true
+}
 
 const deleteClient = id => {
   store.deleteClient(id)
