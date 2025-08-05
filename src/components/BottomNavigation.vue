@@ -1,5 +1,5 @@
 <template>
-  <nav class="py-2 flex justify-evenly border border-stone-400 dark:border-stone-700 rounded-md m-2 w-full max-w-lg">
+  <nav class="py-2 flex justify-evenly border border-stone-400 dark:border-stone-700 rounded-md m-2 w-full max-w-xl">
     <router-link to="/clients" class="p-2 rounded-sm transition-colors" :class="{
       'bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900':
         route.name == 'Clientes',
