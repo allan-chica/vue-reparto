@@ -17,7 +17,7 @@ export default defineConfig({
         name: 'Reparto del pops',
         short_name: 'Reparto',
         description: 'Manejar clientes, productos y ventas.',
-        theme_color: '#6225c5',
+        theme_color: '#0c0a09',
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',
