@@ -25,6 +25,10 @@ export const useClientsStore = defineStore('clients', {
     async deleteClient(id) {
       await db.delete('clients', id)
       this.clients = this.clients.filter(c => c.id !== id)
+    },
+
+    async getClientById(id) {
+      return await db.get('clients', id)
     }
-  }
+  },
 })
