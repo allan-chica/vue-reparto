@@ -16,6 +16,7 @@
       <div class="flex flex-col gap-2">
         <Label for="price">Precio</Label>
         <Input id="price" v-model="form.price" type="number" />
+        <span v-if="emptyPrice" class="text-sm text-red-400">El precio es obligatorio</span>
       </div>
       <Button type="submit">{{ isEditing ? 'Editar' : 'Crear' }} Producto</Button>
     </form>
@@ -40,11 +41,17 @@ const form = ref({ name: '', price: '' })
 const isEditing = computed(() => route.name === 'Editar producto')
 const editingId = computed(() => route.params.id)
 const emptyName = ref(false)
+const emptyPrice = ref(false)
 
 // Methods
 const saveProduct = () => {
-  if (!form.value.name) {
+  if (form.value.name.trim() === '') {
     emptyName.value = true
+    return
+  }
+
+  if (form.value.price === '' || form.value.price < 0) {
+    emptyPrice.value = true
     return
   }
 
@@ -57,6 +64,7 @@ const saveProduct = () => {
   form.value.name = ''
   form.value.price = ''
   emptyName.value = false
+  emptyPrice.value = false
 
   router.push('/foods')
 }
