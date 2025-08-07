@@ -5,6 +5,7 @@ import ClientFormView from '@/views/ClientFormView.vue'
 import FoodsView from '@/views/FoodsView.vue'
 import FoodFormView from '@/views/FoodFormView.vue'
 import SalesView from '@/views/SalesView.vue'
+import SaleFormView from '@/views/SaleFormView.vue'
 
 const routes = [
   { path: '/', redirect: '/sales' },
@@ -15,6 +16,7 @@ const routes = [
   { path: '/foods/new', component: FoodFormView, name: 'Nuevo producto' },
   { path: '/foods/edit/:id', component: FoodFormView, name: 'Editar producto', props: true },
   { path: '/sales', component: SalesView, name: 'Ventas' },
+  { path: '/sales/new', component: SaleFormView, name: 'Nueva venta' },
 ]
 
 const router = createRouter({
