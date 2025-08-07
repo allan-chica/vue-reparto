@@ -7,7 +7,7 @@
     </div>
 
     <div class="relative mb-4 items-center">
-      <Input v-model="searchQuery" placeholder="Buscar..." class="pl-9" />
+      <Input v-model="searchQuery" placeholder="Buscar..." class="pl-9" id="search" />
       <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
         <Search class="size-5 text-muted-foreground" />
       </span>
@@ -16,9 +16,9 @@
     <ul class="space-y-2">
       <li v-for="client in filteredClients" :key="client.id"
         class="flex justify-between items-center border p-3 rounded-md">
-        <div>
+        <div class="text-lg">
           <p class="font-semibold">{{ client.name }}</p>
-          <p class="text-sm text-stone-500">{{ client.phone }}</p>
+          <p class="text-stone-500">{{ client.phone }}</p>
         </div>
         <div class="space-x-2">
           <Button size="icon" variant="outline" @click="router.push(`/clients/edit/${client.id}`)">
