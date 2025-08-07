@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 max-w-xl mx-auto">
+  <div class="px-6 pt-6 max-w-xl mx-auto flex flex-col h-full">
 
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold">Clientes</h1>
@@ -13,24 +13,38 @@
       </span>
     </div>
 
-    <ul class="space-y-2">
-      <li v-for="client in filteredClients" :key="client.id"
-        class="flex justify-between items-center border p-3 rounded-md">
-        <div class="text-lg">
-          <p class="font-semibold">{{ client.name }}</p>
-          <p class="text-stone-500">{{ client.phone }}</p>
-        </div>
-        <div class="space-x-2">
-          <Button size="icon" variant="outline" @click="router.push(`/clients/edit/${client.id}`)">
-            <Pencil />
-          </Button>
+    <div class="flex-1 min-h-0">
+      <AlphabetScroll :items="filteredClients" label-key="name" id-key="id" scrollAreaClass="h-full"
+        letter-header-class="bg-background/95 backdrop-blur-sm py-2 px-3">
 
-          <Button size="icon" variant="destructive" @click="dialogDelete(client)">
-            <Trash2 />
-          </Button>
-        </div>
-      </li>
-    </ul>
+        <template #item="{ item }">
+          <div class="flex justify-between items-center border p-3 rounded-md">
+            <div class="text-lg">
+              <p class="font-semibold">{{ item.name }}</p>
+              <p class="text-stone-500">{{ item.phone }}</p>
+            </div>
+
+            <div class="space-x-2">
+              <Button size="icon" variant="outline" @click="router.push(`/clients/edit/${item.id}`)">
+                <Pencil />
+              </Button>
+              <Button size="icon" variant="destructive" @click="dialogDelete(item)">
+                <Trash2 />
+              </Button>
+            </div>
+          </div>
+        </template>
+
+        <template #empty>
+          <div class="flex flex-col items-center justify-center py-12 text-center">
+            <div class="text-muted-foreground">
+              No hay clientes registrados.
+            </div>
+          </div>
+        </template>
+
+      </AlphabetScroll>
+    </div>
 
   </div>
 
@@ -80,6 +94,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2, Search } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import AlphabetScroll from '@/components/AlphabetScroll.vue'
 
 const store = useClientsStore()
 const router = useRouter()

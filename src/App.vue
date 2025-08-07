@@ -2,7 +2,7 @@
   <Toaster position="top-center" />
 
   <div class="flex flex-col items-center h-full">
-    <div class="flex-1 w-full">
+    <div class="flex-1 w-full min-h-0">
       <router-view></router-view>
     </div>
 

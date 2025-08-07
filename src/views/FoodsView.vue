@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 max-w-xl mx-auto">
+  <div class="p-6 max-w-xl mx-auto flex flex-col h-full">
 
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold">Productos</h1>
@@ -13,25 +13,36 @@
       </span>
     </div>
 
-    <ul class="space-y-2">
-      <li v-for="product in filteredProducts" :key="product.id"
-        class="flex justify-between items-center border p-3 rounded-md">
-        <div class="text-lg font-semibold">
-          <span>{{ product.name }}</span>
-          <span v-if="product.price" class="text-green-600 dark:text-green-500"> - ${{ formatPrice(product.price)
-            }}</span>
-        </div>
-        <div class="space-x-2">
-          <Button size="icon" variant="outline" @click="router.push(`/foods/edit/${product.id}`)">
-            <Pencil />
-          </Button>
+    <div class="flex-1 min-h-0">
+      <AlphabetScroll :items="filteredProducts" label-key="name" id-key="id" scrollAreaClass="h-full"
+        letter-header-class="bg-background/95 backdrop-blur-sm py-2 px-3">
 
-          <Button size="icon" variant="destructive" @click="dialogDelete(product)">
-            <Trash2 />
-          </Button>
-        </div>
-      </li>
-    </ul>
+        <template #item="{ item }">
+          <div class="flex justify-between items-center border p-3 rounded-md">
+            <p class="font-semibold">{{ item.name }} - <span class="text-green-600 dark:text-green-500">${{
+              formatPrice(item.price)
+                }}</span></p>
+            <div class="space-x-2">
+              <Button size="icon" variant="outline" @click="router.push(`/foods/edit/${item.id}`)">
+                <Pencil />
+              </Button>
+              <Button size="icon" variant="destructive" @click="dialogDelete(item)">
+                <Trash2 />
+              </Button>
+            </div>
+          </div>
+        </template>
+
+        <template #empty>
+          <div class="flex flex-col items-center justify-center py-12 text-center">
+            <div class="text-muted-foreground">
+              No hay productos registrados.
+            </div>
+          </div>
+        </template>
+
+      </AlphabetScroll>
+    </div>
 
   </div>
 
@@ -81,6 +92,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2, Search } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import AlphabetScroll from '@/components/AlphabetScroll.vue'
 
 const store = useProductsStore()
 const router = useRouter()

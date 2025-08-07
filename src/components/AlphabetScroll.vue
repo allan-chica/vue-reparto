@@ -1,5 +1,5 @@
 <template>
-  <div class="flex relative">
+  <div class="flex relative h-full">
     <!-- Main content area -->
     <div class="flex-1 overflow-hidden">
       <ScrollArea ref="scrollAreaRef" :class="scrollAreaClass" @scroll="handleScroll">
@@ -10,7 +10,7 @@
             <div :ref="el => letterRefs[section.letter] = el" class="h-0" :data-letter="section.letter"></div>
 
             <!-- Letter header -->
-            <div class="sticky top-0 bg-background/95 backdrop-blur-sm py-2 px-3 border-b">
+            <div class="sticky top-0" :class="letterHeaderClass">
               <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                 {{ section.letter === '#' ? 'Otros' : section.letter }}
               </h3>
@@ -81,6 +81,10 @@ const props = defineProps({
   scrollAreaClass: {
     type: String,
     default: 'h-96'
+  },
+  letterHeaderClass: {
+    type: String,
+    default: 'bg-background/95 backdrop-blur-sm py-2 px-3 border-b'
   },
   enableHaptic: {
     type: Boolean,

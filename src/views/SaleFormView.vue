@@ -96,6 +96,7 @@
 
               <span class="text-sm border-b p-2">{{ 0 }}</span>
 
+              <!-- TODO: Add to a list of products with the amount -->
               <Button size="icon" variant="outline">
                 +
               </Button>
