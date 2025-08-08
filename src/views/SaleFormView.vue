@@ -68,8 +68,10 @@
         letter-header-class="bg-background/95 backdrop-blur-sm py-2 px-3">
 
         <template #item="{ item }">
-          <div class="p-3 rounded-md flex justify-between items-center border-b-1 mb-3"
-            :class="{ 'bg-stone-100 dark:bg-stone-900/50': getProductQuantity(item.id) }">
+          <div class="p-3 flex justify-between items-center border mb-3" :class="{
+            'border-transparent': !getProductQuantity(item.id),
+            'bg-stone-100 dark:bg-stone-900/50 border-muted rounded-md': getProductQuantity(item.id)
+          }">
 
             <div class="flex flex-col text-lg">
               <p class="font-semibold">{{ item.name }}</p>
