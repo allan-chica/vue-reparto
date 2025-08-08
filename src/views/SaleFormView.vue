@@ -1,5 +1,5 @@
 <template>
-  <div class="px-6 pt-6 max-w-xl mx-auto">
+  <div class="px-6 pt-6 max-w-xl mx-auto flex flex-col h-full">
 
     <div class="flex gap-4 items-center mb-4">
       <Button type="submit" size="icon" variant="outline" @click="router.back()">
@@ -36,24 +36,6 @@
           </span>
         </div>
 
-        <!-- <ScrollArea class="h-96">
-          <div class="space-y-2">
-            <div v-if="!clients.length" class="text-center text-muted-foreground">
-              No hay clientes registrados.
-            </div>
-            <ul v-else class="space-y-2">
-              <li v-for="client in filteredClients" :key="client.id"
-                class="flex justify-between items-center border p-3 rounded-md cursor-pointer hover:bg-muted"
-                @click="selectClient(client)">
-                <div class="text-lg">
-                  <p class="font-semibold">{{ client.name }}</p>
-                </div>
-                <ChevronRight />
-              </li>
-            </ul>
-          </div>
-        </ScrollArea> -->
-
         <div class="flex-1 min-h-0">
           <AlphabetScroll :items="filteredClients" label-key="name" id-key="id" :scrollAreaClass="'h-full max-h-96'">
             <template #item="{ item }">
@@ -82,23 +64,30 @@
 
     <!-- Products list -->
     <div class="flex-1 min-h-0">
-      <AlphabetScroll :items="filteredProducts" label-key="name" id-key="id" :scrollAreaClass="'h-full max-h-96'">
+      <AlphabetScroll :items="filteredProducts" label-key="name" id-key="id" scroll-area-class="h-full"
+        letter-header-class="bg-background/95 backdrop-blur-sm py-2 px-3">
 
         <template #item="{ item }">
-          <div class="p-3 rounded-md flex justify-between items-center">
-            <p class="font-semibold">{{ item.name }} - <span class="text-green-600 dark:text-green-500">${{
-              formatPrice(item.price)
-                }}</span></p>
+          <div class="p-3 rounded-md flex justify-between items-center border-b-1 mb-3"
+            :class="{ 'bg-stone-100 dark:bg-stone-900/50': getProductQuantity(item.id) }">
+
+            <div class="flex flex-col text-lg">
+              <p class="font-semibold">{{ item.name }}</p>
+              <p class="text-green-600 dark:text-green-500">${{ formatPrice(item.price) }}</p>
+            </div>
+
             <div class="flex items-center space-x-2 mt-2">
-              <Button size="icon" variant="outline" disabled>
-                -
+              <Button size="icon" variant="outline" :disabled="!getProductQuantity(item.id)"
+                @click="removeProduct(item)">
+                <Minus />
               </Button>
 
-              <span class="text-sm border-b p-2">{{ 0 }}</span>
+              <span class="text-sm border-b p-2"
+                :class="{ 'border-green-600 dark:border-green-500': getProductQuantity(item.id) }">{{
+                  getProductQuantity(item.id) }}</span>
 
-              <!-- TODO: Add to a list of products with the amount -->
-              <Button size="icon" variant="outline">
-                +
+              <Button size="icon" variant="outline" @click="addProduct(item)">
+                <Plus />
               </Button>
             </div>
           </div>
@@ -113,13 +102,31 @@
       </AlphabetScroll>
     </div>
 
+    <Transition enter-active-class="transition-all duration-300 ease-out overflow-hidden"
+      enter-from-class="max-h-0 opacity-0" enter-to-class="max-h-[100px] opacity-100"
+      leave-active-class="transition-all duration-300 ease-in overflow-hidden"
+      leave-from-class="max-h-[100px] opacity-100" leave-to-class="max-h-0 opacity-0">
+      <div class="bg-background border-t shadow-lg" v-if="selectedProducts.length > 0">
+        <div class="flex justify-between items-center p-4 max-w-xl mx-auto">
+          <div>
+            <p>{{ selectedProducts.length }} productos</p>
+            <p class="text-lg font-bold">${{ formatPrice(totalPrice) }}</p>
+          </div>
+          <Button :disabled="!selectedClient">Ver resumen</Button>
+        </div>
+      </div>
+    </Transition>
+
   </div>
+
+  <!-- Sale summary -->
+  <!-- <div></div> -->
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref, onMounted, computed } from 'vue'
-import { ChevronLeft, ChevronRight, Search } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, Search, Plus, Minus } from 'lucide-vue-next'
 import {
   Dialog,
   DialogContent,
@@ -171,11 +178,46 @@ const filteredProducts = computed(() => {
 })
 
 const isEditing = ref(false)
+const selectedProducts = ref([])
+
+const totalPrice = computed(() => {
+  return selectedProducts.value.reduce((total, product) => {
+    return total + (product.price * product.quantity)
+  }, 0)
+})
 
 // Methods
 const selectClient = client => {
   selectedClient.value = client
   clientDialogOpen.value = false
+}
+
+const addProduct = (product) => {
+  const existingProduct = selectedProducts.value.find(p => p.id === product.id)
+  if (existingProduct) {
+    existingProduct.quantity++
+  } else {
+    selectedProducts.value.push({
+      ...product,
+      quantity: 1
+    })
+  }
+}
+
+const removeProduct = (product) => {
+  const existingProduct = selectedProducts.value.find(p => p.id === product.id)
+  if (existingProduct) {
+    if (existingProduct.quantity > 1) {
+      existingProduct.quantity--
+    } else {
+      selectedProducts.value = selectedProducts.value.filter(p => p.id !== product.id)
+    }
+  }
+}
+
+const getProductQuantity = (productId) => {
+  const product = selectedProducts.value.find(p => p.id === productId)
+  return product ? product.quantity : 0
 }
 
 const formatPrice = price => {

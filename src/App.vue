@@ -1,19 +1,13 @@
 <template>
   <Toaster position="top-center" />
 
-  <div class="flex flex-col items-center h-full">
-    <div class="flex-1 w-full min-h-0">
-      <router-view></router-view>
-    </div>
+  <router-view></router-view>
 
-    <BottomNavigation />
-  </div>
 </template>
 
 <script setup>
 import { useColorMode } from '@vueuse/core'
-import { RouterView } from 'vue-router'
-import BottomNavigation from '@/components/BottomNavigation.vue'
+// import { RouterView } from 'vue-router'
 
 import { Toaster } from './components/ui/sonner'
 import 'vue-sonner/style.css'

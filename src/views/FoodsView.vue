@@ -19,10 +19,11 @@
 
         <template #item="{ item }">
           <div class="flex justify-between items-center border p-3 rounded-md">
-            <p class="font-semibold">{{ item.name }} - <span class="text-green-600 dark:text-green-500">${{
-              formatPrice(item.price)
-                }}</span></p>
-            <div class="space-x-2">
+            <div class="text-lg">
+              <p class="font-semibold">{{ item.name }}</p>
+              <p class="text-green-600 dark:text-green-500">${{ formatPrice(item.price) }}</p>
+            </div>
+            <div class="flex gap-2 items-center">
               <Button size="icon" variant="outline" @click="router.push(`/foods/edit/${item.id}`)">
                 <Pencil />
               </Button>

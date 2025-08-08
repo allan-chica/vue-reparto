@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import MainLayout from '@/layouts/MainLayout.vue'
 import ClientsView from '@/views/ClientsView.vue'
 import ClientFormView from '@/views/ClientFormView.vue'
 import FoodsView from '@/views/FoodsView.vue'
@@ -8,15 +9,66 @@ import SalesView from '@/views/SalesView.vue'
 import SaleFormView from '@/views/SaleFormView.vue'
 
 const routes = [
-  { path: '/', redirect: '/sales' },
-  { path: '/clients', component: ClientsView, name: 'Clientes' },
-  { path: '/clients/new', component: ClientFormView, name: 'Nuevo cliente' },
-  { path: '/clients/edit/:id', component: ClientFormView, name: 'Editar cliente', props: true },
-  { path: '/foods', component: FoodsView, name: 'Productos' },
-  { path: '/foods/new', component: FoodFormView, name: 'Nuevo producto' },
-  { path: '/foods/edit/:id', component: FoodFormView, name: 'Editar producto', props: true },
-  { path: '/sales', component: SalesView, name: 'Ventas' },
-  { path: '/sales/new', component: SaleFormView, name: 'Nueva venta' },
+  {
+    path: '/',
+    // redirect: '/sales'
+    component: MainLayout,
+    children: [
+      {
+        path: '/',
+        redirect: '/sales'
+      },
+
+      // Clients
+      {
+        path: 'clients',
+        component: ClientsView,
+        name: 'Clientes'
+      },
+      {
+        path: '/clients/new',
+        component: ClientFormView,
+        name: 'Nuevo cliente'
+      },
+      {
+        path: '/clients/edit/:id',
+        component: ClientFormView,
+        name: 'Editar cliente',
+        props: true
+      },
+
+      // Foods
+      {
+        path: '/foods',
+        component: FoodsView,
+        name: 'Productos'
+      },
+      {
+        path: '/foods/new',
+        component: FoodFormView,
+        name: 'Nuevo producto'
+      },
+      {
+        path: '/foods/edit/:id',
+        component: FoodFormView,
+        name: 'Editar producto',
+        props: true
+      },
+
+      // Sales
+      {
+        path: '/sales',
+        component: SalesView,
+        name: 'Ventas'
+      },
+    ]
+  },
+
+  {
+    path: '/sales/new',
+    component: SaleFormView,
+    name: 'Nueva venta'
+  },
 ]
 
 const router = createRouter({
