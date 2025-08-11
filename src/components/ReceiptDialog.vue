@@ -70,8 +70,6 @@ const props = defineProps({
   }
 })
 
-// const emit = defineEmits(['update:isOpen'])
-
 // State
 // const open = ref(props.modelValue)
 // watch(() => props.modelValue, val => open.value = val)
@@ -129,8 +127,7 @@ const shareReceipt = async () => {
     const blob = await response.blob()
     const file = new File([blob], `recibo-${new Date().toISOString()}.jpg`, { type: 'image/jpeg' })
 
-    // if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    if (navigator.share) {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         title: 'Recibo de Venta',
         text: `Recibo de venta para ${props.sale.client?.name || 'Cliente'}`,

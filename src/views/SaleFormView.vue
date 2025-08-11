@@ -167,7 +167,7 @@
           <Button class="w-full mt-2" size="lg" @click="confirmSale">Confirmar venta</Button>
 
           <!-- Receipt dialog -->
-          <ReceiptDialog :isOpen="isReceiptOpen" :sale="lastSale" />
+          <ReceiptDialog :isOpen="isReceiptOpen" :sale="lastSale" @update:isOpen="isReceiptOpen = $event" />
         </div>
 
       </div>
