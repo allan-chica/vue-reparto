@@ -9,33 +9,53 @@
       </DialogHeader>
 
       <!-- HTML Preview -->
-      <div ref="receipt-ref" class="p-6 w-[350px] receipt bg-white text-black border">
-        <h2 class="text-xl font-bold mb-4">Recibo de Venta</h2>
-        <p><strong>Cliente:</strong> {{ sale.client?.name }}</p>
-        <p><strong>Fecha:</strong> {{ date }}</p>
-        <hr class="my-4" />
-
-        <table class="w-full border-collapse">
-          <thead>
-            <tr>
-              <th class="border px-2 py-1 text-left">Producto</th>
-              <th class="border px-2 py-1 text-right">Cant.</th>
-              <th class="border px-2 py-1 text-right">Precio</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="product in sortedProducts" :key="product.id">
-              <td class="border px-2 py-1">{{ product.name }}</td>
-              <td class="border px-2 py-1 text-right">{{ product.quantity }}</td>
-              <td class="border px-2 py-1 text-right">
-                ${{ formatPrice(product.price * product.quantity) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <hr class="my-4" />
-        <p class="text-right font-bold text-lg">Total: ${{ formatPrice(sale.total) }}</p>
+      <div class="border rounded-lg overflow-hidden">
+        <div ref="receipt-ref" class="p-4 receipt bg-white text-black">
+          <!-- Title -->
+          <div class="text-right font-bold text-stone-700 -mb-3">REMITO</div>
+          <!-- Header -->
+          <div class="flex justify-between items-end">
+            <div>
+              <p class="text-2xl font-bold">INMAR</p>
+              <p class="tracking-wider -mt-2">PANIFICADOS</p>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-semibold">2665009704</p>
+              <p class="text-xs font-semibold">Ruta 20 y Concaran, Juana Koslay</p>
+            </div>
+          </div>
+          <hr class="my-2" />
+          <div class="flex justify-between mb-2">
+            <p><strong>Sr.:</strong> {{ sale.client?.name }}</p>
+            <p>{{ date }}</p>
+          </div>
+          <table class="w-full border-collapse">
+            <thead>
+              <tr>
+                <th class="text-sm border px-1.5 py-1 text-center" style="width: 1px">Cant.</th>
+                <th class="text-sm border px-1.5 py-1 text-left">Detalle</th>
+                <th class="text-sm border px-1.5 py-1 text-right" style="width: 1px">Precio Unit.</th>
+                <th class="text-sm border px-1.5 py-1 text-right" style="width: 1px">Importe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="product in sortedProducts" :key="product.id">
+                <td class="border px-1.5 py-1 text-center whitespace-nowrap">{{ product.quantity }}</td>
+                <td class="border px-1.5 py-1">{{ product.name }}</td>
+                <td class="border px-1.5 py-1 text-right whitespace-nowrap">
+                  ${{ formatPrice(product.price) }}
+                </td>
+                <td class="border px-1.5 py-1 text-right whitespace-nowrap">
+                  ${{ formatPrice(product.price * product.quantity) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="flex justify-between items-center mt-3">
+            <p class="text-sm">Documento NO válido como factura</p>
+            <p class="text-right font-bold text-lg">Total: ${{ formatPrice(sale.total) }}</p>
+          </div>
+        </div>
       </div>
 
       <div class="flex gap-2 mt-4">
@@ -75,11 +95,6 @@ const props = defineProps({
   }
 })
 
-// State
-// const open = ref(props.modelValue)
-// watch(() => props.modelValue, val => open.value = val)
-// watch(open, val => emit('update:modelValue', val))
-
 const receiptRef = useTemplateRef('receipt-ref')
 const loadingAction = ref(null)
 
@@ -98,7 +113,8 @@ const date = computed(() => {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    hour12: false
   })
 })
 
