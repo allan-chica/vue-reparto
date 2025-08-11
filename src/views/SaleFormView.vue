@@ -181,7 +181,7 @@
           <AlertDialogDescription>La venta se gaurdó correctamente.</AlertDialogDescription>
         </AlertDialogHeader>
         <div class="flex mt-4 gap-3">
-          <Button class="flex-1" size="lg" variant="outline" @click="completedDialogOpen = false">Volver a la
+          <Button class="flex-1" size="lg" variant="outline" @click="goToList">Volver a la
             lista</Button>
           <Button class="flex-1" size="lg" @click="viewReceipt">Ver recibo</Button>
         </div>
@@ -218,10 +218,12 @@ import AlphabetScroll from '@/components/AlphabetScroll.vue'
 import ReceiptDialog from '@/components/ReceiptDialog.vue'
 import { useClientsStore } from '@/stores/clients'
 import { useProductsStore } from '@/stores/products'
+import { useSalesStore } from '@/stores/sales'
 
 const router = useRouter()
 const clientStore = useClientsStore()
 const productStore = useProductsStore()
+const saleStore = useSalesStore()
 
 const clients = computed(() => clientStore.clients)
 const clientSearchQuery = ref('')
@@ -314,49 +316,25 @@ const formatPrice = price => {
 }
 
 const confirmSale = () => {
-  // Here you would normally handle the sale confirmation logic,
-  // such as sending the sale data to your backend or updating your store.
-
+  const client = JSON.parse(JSON.stringify(selectedClient.value))
+  const products = JSON.parse(JSON.stringify(selectedProducts.value))
+  const total = totalPrice.value
   const date = Date.now()
 
-  // console.log('Cliente:', selectedClient.value)
-  // console.log('Productos:', selectedProducts.value)
-  // console.log('Total:', totalPrice.value)
-  // console.log(date)
-
-  console.log({
-    client: selectedClient.value,
-    products: selectedProducts.value,
-    total: totalPrice.value,
-    date
+  lastSale.value = { client, products, total, date }
+  saleStore.addSale({
+    client,
+    products,
+    total,
+    date,
+    isPaid: false,
+    payment: {
+      type: null,
+      details: null
+    }
   })
 
-  lastSale.value = {
-    client: selectedClient.value,
-    products: selectedProducts.value,
-    total: totalPrice.value,
-    date
-  }
-
   completedDialogOpen.value = true
-
-  // isReceiptOpen.value = true
-
-  // const dateObj = new Date(date)
-  // const formattedDate = dateObj.toLocaleString('es-AR', {
-  //   year: 'numeric',
-  //   month: '2-digit',
-  //   day: '2-digit',
-  //   hour: '2-digit',
-  //   minute: '2-digit',
-  //   second: '2-digit',
-  //   hour12: false
-  // })
-
-  // Reset the form
-  // selectedClient.value = null
-  // selectedProducts.value = []
-  // viewSummary.value = false
 }
 
 const viewReceipt = () => {
@@ -366,11 +344,15 @@ const viewReceipt = () => {
 
 const onReceiptClose = () => {
   isReceiptOpen.value = false
-  return
+
   // TODO: Take them to the sale view
+  goToList()
 }
 
-// TODO: Create a method to go back to the list of sales
+const goToList = () => {
+  router.push('/sales')
+  viewSummary.value = false
+}
 
 const handlePopState = () => {
   if (viewSummary.value) {

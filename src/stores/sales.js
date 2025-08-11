@@ -29,6 +29,24 @@ export const useSalesStore = defineStore('sales', {
 
     async getSaleById(id) {
       return await db.get('sales', id)
-    }
+    },
+
+    async markSalePaid(id, paymentType, details = null) {
+      const sale = await this.getSaleById(id)
+      if (!sale) throw new Error('Sale not found')
+
+      sale.isPaid = true
+      sale.payment = { type: paymentType, details }
+      await this.updateSale(sale)
+    },
+
+    async markSaleUnpaid(id) {
+      const sale = await this.getSaleById(id)
+      if (!sale) throw new Error('Sale not found')
+
+      sale.isPaid = false
+      sale.payment = { type: null, details: null }
+      await this.updateSale(sale)
+    },
   },
 })
