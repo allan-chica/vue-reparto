@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 
 export const useClientsStore = defineStore('clients', {
   state: () => ({
-    clients: [],
+    clients: []
   }),
 
   actions: {

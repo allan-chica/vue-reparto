@@ -164,7 +164,10 @@
             <p>Total</p>
             <p>${{ formatPrice(totalPrice) }}</p>
           </div>
-          <Button class="w-full mt-2" size="lg">Confirmar venta</Button>
+          <Button class="w-full mt-2" size="lg" @click="confirmSale">Confirmar venta</Button>
+
+          <!-- Receipt dialog -->
+          <ReceiptDialog :isOpen="isReceiptOpen" :sale="lastSale" />
         </div>
 
       </div>
@@ -190,6 +193,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue'
 import AlphabetScroll from '@/components/AlphabetScroll.vue'
+import ReceiptDialog from '@/components/ReceiptDialog.vue'
 import { useClientsStore } from '@/stores/clients'
 import { useProductsStore } from '@/stores/products'
 
@@ -238,6 +242,9 @@ const sortedSelectedProducts = computed(() => {
   )
 })
 
+const isReceiptOpen = ref(false)
+const lastSale = ref({})
+
 const totalPrice = computed(() => {
   return selectedProducts.value.reduce((total, product) => {
     return total + (product.price * product.quantity)
@@ -280,6 +287,50 @@ const getProductQuantity = (productId) => {
 
 const formatPrice = price => {
   return new Intl.NumberFormat('es-AR').format(price)
+}
+
+const confirmSale = () => {
+  // Here you would normally handle the sale confirmation logic,
+  // such as sending the sale data to your backend or updating your store.
+
+  const date = Date.now()
+
+  // console.log('Cliente:', selectedClient.value)
+  // console.log('Productos:', selectedProducts.value)
+  // console.log('Total:', totalPrice.value)
+  // console.log(date)
+
+  console.log({
+    client: selectedClient.value,
+    products: selectedProducts.value,
+    total: totalPrice.value,
+    date
+  })
+
+  lastSale.value = {
+    client: selectedClient.value,
+    products: selectedProducts.value,
+    total: totalPrice.value,
+    date
+  }
+
+  isReceiptOpen.value = true
+
+  // const dateObj = new Date(date)
+  // const formattedDate = dateObj.toLocaleString('es-AR', {
+  //   year: 'numeric',
+  //   month: '2-digit',
+  //   day: '2-digit',
+  //   hour: '2-digit',
+  //   minute: '2-digit',
+  //   second: '2-digit',
+  //   hour12: false
+  // })
+
+  // Reset the form
+  // selectedClient.value = null
+  // selectedProducts.value = []
+  // viewSummary.value = false
 }
 
 const handlePopState = () => {
