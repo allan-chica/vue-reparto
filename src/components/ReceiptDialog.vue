@@ -19,7 +19,7 @@
               <img src="/public/logo.jpg" alt="" class="w-36">
             </div>
             <div class="text-right">
-              <p class="text-sm font-semibold">2665009704</p>
+              <p class="text-sm font-semibold">Tel: 2665009704</p>
               <p class="text-xs font-semibold">Ruta 20 y Concaran, Juana Koslay</p>
             </div>
           </div>
