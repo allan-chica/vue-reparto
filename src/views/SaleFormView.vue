@@ -367,6 +367,7 @@ const viewReceipt = () => {
 const onReceiptClose = () => {
   isReceiptOpen.value = false
   return
+  // TODO: Take them to the sale view
 }
 
 // TODO: Create a method to go back to the list of sales

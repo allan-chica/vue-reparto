@@ -9,15 +9,14 @@
       </DialogHeader>
 
       <!-- HTML Preview -->
-      <div class="border rounded-lg overflow-hidden">
+      <ScrollArea class="border rounded-lg overflow-hidden max-h-[32rem]">
         <div ref="receipt-ref" class="p-4 receipt bg-white text-black">
           <!-- Title -->
           <div class="text-right font-bold text-stone-700 -mb-3">REMITO</div>
           <!-- Header -->
           <div class="flex justify-between items-end">
             <div>
-              <p class="text-2xl font-bold">INMAR</p>
-              <p class="tracking-wider -mt-2">PANIFICADOS</p>
+              <img src="/public/logo.jpg" alt="" class="w-36">
             </div>
             <div class="text-right">
               <p class="text-sm font-semibold">2665009704</p>
@@ -52,11 +51,11 @@
             </tbody>
           </table>
           <div class="flex justify-between items-center mt-3">
-            <p class="text-sm">Documento NO válido como factura</p>
+            <p class="text-xs">Documento NO válido como factura</p>
             <p class="text-right font-bold text-lg">Total: ${{ formatPrice(sale.total) }}</p>
           </div>
         </div>
-      </div>
+      </ScrollArea>
 
       <div class="flex gap-2 mt-4">
         <Button class="flex-1" size="lg" variant="outline" :disabled="loadingAction" @click="downloadReceipt">
@@ -83,6 +82,7 @@
 import { ref, computed, useTemplateRef } from 'vue'
 import html2canvas from 'html2canvas-pro'
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Download, Share2 } from 'lucide-vue-next'
 
@@ -124,6 +124,14 @@ const generateReceiptImage = async () => {
   return canvas.toDataURL('image/jpeg', 0.95)
 }
 
+const getFileName = () => {
+  const clientString = props.sale.client?.name
+    ? props.sale.client.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+    : 'cliente'
+  const dateString = new Date(props.sale.date).toISOString().split('T')[0].split('-').reverse().join('-')
+  return `recibo.${clientString}.${dateString}.jpg`
+}
+
 const downloadReceipt = async () => {
   loadingAction.value = 'download'
   try {
@@ -132,7 +140,7 @@ const downloadReceipt = async () => {
 
     const link = document.createElement('a')
     link.href = image
-    link.download = `recibo-${new Date().toISOString()}.jpg`
+    link.download = getFileName()
     link.click()
   } finally {
     loadingAction.value = null
@@ -146,7 +154,7 @@ const shareReceipt = async () => {
     if (!image) return
     const response = await fetch(image)
     const blob = await response.blob()
-    const file = new File([blob], `recibo-${new Date().toISOString()}.jpg`, { type: 'image/jpeg' })
+    const file = new File([blob], getFileName(), { type: 'image/jpeg' })
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
