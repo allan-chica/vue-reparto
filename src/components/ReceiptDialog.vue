@@ -38,15 +38,19 @@
         <p class="text-right font-bold text-lg">Total: ${{ formatPrice(sale.total) }}</p>
       </div>
 
-      <div class="flex justify-end gap-2 mt-4">
-        <Button variant="outline" :disabled="loadingAction" @click="downloadReceipt">
+      <div class="flex gap-2 mt-4">
+        <Button class="flex-1" size="lg" variant="outline" :disabled="loadingAction" @click="downloadReceipt">
           <span v-if="loadingAction === 'download'">Generando...</span>
-          <span v-else>Descargar</span>
+          <span v-else class="flex items-center gap-2">
+            <Download /> Descargar
+          </span>
         </Button>
 
-        <Button variant="default" :disabled="loadingAction" @click="shareReceipt">
+        <Button class="flex-1" size="lg" variant="default" :disabled="loadingAction" @click="shareReceipt">
           <span v-if="loadingAction === 'share'">Generando...</span>
-          <span v-else>Compartir</span>
+          <span v-else class="flex items-center gap-2">
+            <Share2 /> Compartir
+          </span>
         </Button>
       </div>
 
@@ -60,6 +64,7 @@ import { ref, computed, useTemplateRef } from 'vue'
 import html2canvas from 'html2canvas-pro'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Download, Share2 } from 'lucide-vue-next'
 
 // Props
 const props = defineProps({

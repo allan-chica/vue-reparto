@@ -167,11 +167,26 @@
           <Button class="w-full mt-2" size="lg" @click="confirmSale">Confirmar venta</Button>
 
           <!-- Receipt dialog -->
-          <ReceiptDialog :isOpen="isReceiptOpen" :sale="lastSale" @update:isOpen="isReceiptOpen = $event" />
+          <ReceiptDialog :isOpen="isReceiptOpen" :sale="lastSale" @update:isOpen="onReceiptClose" />
         </div>
 
       </div>
     </Transition>
+
+    <!-- Sale completion dialog -->
+    <AlertDialog v-model:open="completedDialogOpen">
+      <AlertDialogContent class="max-w-lg">
+        <AlertDialogHeader>
+          <AlertDialogTitle class="text-lg font-semibold">Venta completada</AlertDialogTitle>
+          <AlertDialogDescription>La venta se gaurdó correctamente.</AlertDialogDescription>
+        </AlertDialogHeader>
+        <div class="flex mt-4 gap-3">
+          <Button class="flex-1" size="lg" variant="outline" @click="completedDialogOpen = false">Volver a la
+            lista</Button>
+          <Button class="flex-1" size="lg" @click="viewReceipt">Ver recibo</Button>
+        </div>
+      </AlertDialogContent>
+    </AlertDialog>
 
   </div>
 
@@ -189,6 +204,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue'
@@ -250,6 +272,8 @@ const totalPrice = computed(() => {
     return total + (product.price * product.quantity)
   }, 0)
 })
+
+const completedDialogOpen = ref(false)
 
 // Methods
 const selectClient = client => {
@@ -314,7 +338,9 @@ const confirmSale = () => {
     date
   }
 
-  isReceiptOpen.value = true
+  completedDialogOpen.value = true
+
+  // isReceiptOpen.value = true
 
   // const dateObj = new Date(date)
   // const formattedDate = dateObj.toLocaleString('es-AR', {
@@ -332,6 +358,18 @@ const confirmSale = () => {
   // selectedProducts.value = []
   // viewSummary.value = false
 }
+
+const viewReceipt = () => {
+  completedDialogOpen.value = false
+  isReceiptOpen.value = true
+}
+
+const onReceiptClose = () => {
+  isReceiptOpen.value = false
+  return
+}
+
+// TODO: Create a method to go back to the list of sales
 
 const handlePopState = () => {
   if (viewSummary.value) {
