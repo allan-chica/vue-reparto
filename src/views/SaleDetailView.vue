@@ -97,7 +97,7 @@
 
         <div>
           <!-- Paid switch -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 justify-center">
             <Switch v-model="isPaid" />
             <span>Pagado</span>
           </div>
