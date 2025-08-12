@@ -6,6 +6,10 @@
       <Button type="submit" @click="router.push('/sales/new')">Nueva Venta</Button>
     </div>
 
+    <div class="mb-4">
+      <WeeklyEarnings />
+    </div>
+
     <div class="flex-1 min-h-0">
       <ScrollArea class="h-full">
         <div v-for="group in groupedSalesArray" :key="group.day">
@@ -51,6 +55,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { useSalesStore } from '@/stores/sales'
 import { computed, onMounted } from 'vue'
 import StatusIcon from '@/components/StatusIcon.vue'
+import WeeklyEarnings from '@/components/WeeklyEarnings.vue'
 
 const router = useRouter()
 const saleStore = useSalesStore()
