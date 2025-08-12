@@ -10,7 +10,7 @@
 
       <!-- HTML Preview -->
       <ScrollArea class="border rounded-lg overflow-hidden max-h-[32rem]">
-        <div ref="receipt-ref" class="p-4 receipt bg-white text-black">
+        <div class="p-4 receipt bg-white text-black">
           <!-- Title -->
           <div class="text-right font-bold text-stone-700 -mb-3">REMITO</div>
           <!-- Header -->
@@ -56,6 +56,55 @@
           </div>
         </div>
       </ScrollArea>
+
+      <!-- Receipt to print -->
+      <div ref="receipt-ref" class="absolute top-[-9999px] left-[-9999px] w-lg">
+        <div class="p-4 receipt bg-white text-black">
+          <!-- Title -->
+          <div class="text-right font-bold text-stone-700 -mb-3">REMITO</div>
+          <!-- Header -->
+          <div class="flex justify-between items-end">
+            <div>
+              <img src="/src/img/logo.jpg" alt="" class="w-32">
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-semibold">Tel: 2665009704</p>
+              <p class="text-xs font-semibold">Ruta 20 y Concaran, Juana Koslay</p>
+            </div>
+          </div>
+          <hr class="my-2" />
+          <div class="flex justify-between mb-2">
+            <p><strong>Sr.:</strong> {{ sale.client?.name }}</p>
+            <p>{{ date }}</p>
+          </div>
+          <table class="w-full border-collapse">
+            <thead>
+              <tr>
+                <th class="text-sm border px-1.5 py-1 text-center" style="width: 1px">Cant.</th>
+                <th class="text-sm border px-1.5 py-1 text-left">Detalle</th>
+                <th class="text-sm border px-1.5 py-1 text-right" style="width: 1px">Precio Unit.</th>
+                <th class="text-sm border px-1.5 py-1 text-right" style="width: 1px">Importe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="product in sortedProducts" :key="product.id">
+                <td class="border px-1.5 py-1 text-center whitespace-nowrap">{{ product.quantity }}</td>
+                <td class="border px-1.5 py-1">{{ product.name }}</td>
+                <td class="border px-1.5 py-1 text-right whitespace-nowrap">
+                  ${{ formatPrice(product.price) }}
+                </td>
+                <td class="border px-1.5 py-1 text-right whitespace-nowrap">
+                  ${{ formatPrice(product.price * product.quantity) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="flex justify-between items-center mt-3">
+            <p class="text-xs">Documento NO válido como factura</p>
+            <p class="text-right font-bold text-lg">Total: ${{ formatPrice(sale.total) }}</p>
+          </div>
+        </div>
+      </div>
 
       <div class="flex gap-2 mt-4">
         <Button class="flex-1" size="lg" variant="outline" :disabled="loadingAction" @click="downloadReceipt">

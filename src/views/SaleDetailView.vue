@@ -4,7 +4,7 @@
     <!-- Actions -->
     <div class="flex justify-between items-center">
       <div class="flex gap-4 items-center mb-4">
-        <Button type="submit" size="icon" variant="outline" @click="router.back()">
+        <Button type="submit" size="icon" variant="outline" @click="router.push('/sales')">
           <ChevronLeft />
         </Button>
         <h1 class="text-2xl font-semibold truncate">Detalles</h1>
@@ -68,7 +68,7 @@
             </div>
             <div>
               <p class="text-muted-foreground">1x ${{ formatPrice(product.price) }}</p>
-              <p class="text-green-600 dark:text-green-500 font-semibold text-lg">
+              <p class="text-green-600 dark:text-green-500 font-semibold text-lg text-right">
                 ${{ formatPrice(product.price * product.quantity) }}
               </p>
             </div>
