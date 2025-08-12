@@ -16,7 +16,7 @@
           <!-- Header -->
           <div class="flex justify-between items-end">
             <div>
-              <img src="/public/logo.jpg" alt="" class="w-36">
+              <img src="/src/img/logo.jpg" alt="" class="w-32">
             </div>
             <div class="text-right">
               <p class="text-sm font-semibold">Tel: 2665009704</p>

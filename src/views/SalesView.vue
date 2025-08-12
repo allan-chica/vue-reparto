@@ -17,32 +17,22 @@
             </h3>
           </div>
 
-          <div v-for="sale in group.sales" :key="sale.id"
+          <div v-for="sale in group.sales" :key="sale.id" @click="router.push(`/sale/${sale.id}`)"
             class="p-3 hover:bg-muted rounded-md cursor-pointer mb-2 flex justify-between items-center" :class="{
               'border-l-3 border-red-700 dark:border-red-300': !sale.isPaid, // No pagado
-              'border-l-3 border-sky-700 dark:border-sky-300': isPaidStatus('debt'), // Transferencia
-              'border-l-3 border-green-700 dark:border-green-300': isPaidStatus('cash'), // Efectivo
-              'border-l-3 border-orange-700 dark:border-orange-300': isPaidStatus('mix') // Mixto
+              'border-l-3 border-sky-700 dark:border-sky-300': isPaidStatus(sale, 'debt'), // Transferencia
+              'border-l-3 border-green-700 dark:border-green-300': isPaidStatus(sale, 'cash'), // Efectivo
+              'border-l-3 border-orange-700 dark:border-orange-300': isPaidStatus(sale, 'mix') // Mixto
             }">
             <div class="flex-1 flex gap-3 items-center">
-              <div class="rounded-full p-2 flex items-center justify-center" :class="{
-                'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300': !sale.isPaid, // No pagado
-                'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300': isPaidStatus('debt'), // Transferencia
-                'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300': isPaidStatus('cash'), // Efectivo
-                'bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300': isPaidStatus('mix'), // Mixto
-              }">
-                <CircleOff v-if="!sale.isPaid" size="16" />
-                <Wallet v-else-if="isPaidStatus('debt')" size="16" />
-                <Banknote v-else-if="isPaidStatus('cash')" size="16" />
-                <Split v-else-if="isPaidStatus('mix')" size="16" />
-              </div>
+              <StatusIcon :sale="sale" />
               <div>
                 <p class="text-lg font-semibold">{{ sale.client.name }}</p>
                 <p class="text-muted-foreground">{{ getSaleTime(sale) }}</p>
               </div>
             </div>
 
-            <div class="bg-stone-900 p-2 rounded-md">
+            <div class="bg-stone-100 dark:bg-stone-900 p-2 rounded-md">
               <p class="font-semibold">${{ formatPrice(sale.total) }}</p>
             </div>
           </div>
@@ -60,7 +50,7 @@ import { useRouter } from 'vue-router'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useSalesStore } from '@/stores/sales'
 import { computed, onMounted } from 'vue'
-import { CircleOff, Wallet, Banknote, Split } from 'lucide-vue-next'
+import StatusIcon from '@/components/StatusIcon.vue'
 
 const router = useRouter()
 const saleStore = useSalesStore()

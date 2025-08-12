@@ -268,6 +268,7 @@ const sortedSelectedProducts = computed(() => {
 
 const isReceiptOpen = ref(false)
 const lastSale = ref({})
+const saleId = ref(null)
 
 const totalPrice = computed(() => {
   return selectedProducts.value.reduce((total, product) => {
@@ -315,14 +316,14 @@ const formatPrice = price => {
   return new Intl.NumberFormat('es-AR').format(price)
 }
 
-const confirmSale = () => {
+const confirmSale = async () => {
   const client = JSON.parse(JSON.stringify(selectedClient.value))
   const products = JSON.parse(JSON.stringify(selectedProducts.value))
   const total = totalPrice.value
   const date = Date.now()
 
   lastSale.value = { client, products, total, date }
-  saleStore.addSale({
+  const id = await saleStore.addSale({
     client,
     products,
     total,
@@ -335,6 +336,7 @@ const confirmSale = () => {
   })
 
   completedDialogOpen.value = true
+  saleId.value = id
 }
 
 const viewReceipt = () => {
@@ -344,9 +346,7 @@ const viewReceipt = () => {
 
 const onReceiptClose = () => {
   isReceiptOpen.value = false
-
-  // TODO: Take them to the sale view
-  goToList()
+  router.push(`/sale/${saleId.value}`)
 }
 
 const goToList = () => {

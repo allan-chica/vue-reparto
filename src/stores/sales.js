@@ -14,6 +14,7 @@ export const useSalesStore = defineStore('sales', {
     async addSale(sale) {
       const id = await db.add('sales', sale)
       this.sales.push({ ...sale, id })
+      return id
     },
 
     async updateSale(updatedSale) {

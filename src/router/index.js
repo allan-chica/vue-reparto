@@ -7,6 +7,7 @@ import FoodsView from '@/views/FoodsView.vue'
 import FoodFormView from '@/views/FoodFormView.vue'
 import SalesView from '@/views/SalesView.vue'
 import SaleFormView from '@/views/SaleFormView.vue'
+import SaleDetailView from '@/views/SaleDetailView.vue'
 
 const routes = [
   {
@@ -68,6 +69,13 @@ const routes = [
     path: '/sales/new',
     component: SaleFormView,
     name: 'Nueva venta'
+  },
+
+  {
+    path: '/sale/:id',
+    component: SaleDetailView,
+    name: 'Detalle venta',
+    props: true
   },
 ]
 
