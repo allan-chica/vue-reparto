@@ -133,13 +133,13 @@
               <TabsContent value="mix" class="flex gap-3 w-full">
                 <div class="flex-1 flex gap-3 mt-4">
                   <div class="flex-1 flex flex-col gap-2">
-                    <label class="text-sm font-medium" for="mixedCash">Efectivo</label>
-                    <input id="mixedCash" type="number" v-model="mixedCash" placeholder="Monto"
+                    <Label class="text-sm font-medium" for="mixedCash">Efectivo</Label>
+                    <Input id="mixedCash" type="number" v-model="mixedCash" placeholder="Monto"
                       class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500" />
                   </div>
                   <div class="flex-1 flex flex-col gap-2">
-                    <label class="text-sm font-medium" for="mixedDebt">Transferencia</label>
-                    <input id="mixedDebt" type="number" v-model="mixedDebt" placeholder="Monto"
+                    <Label class="text-sm font-medium" for="mixedDebt">Transferencia</Label>
+                    <Input id="mixedDebt" type="number" v-model="mixedDebt" placeholder="Monto"
                       class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500" />
                   </div>
                 </div>
@@ -200,6 +200,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import AlertDialogFooter from '@/components/ui/alert-dialog/AlertDialogFooter.vue'
 import AlertDialogCancel from '@/components/ui/alert-dialog/AlertDialogCancel.vue'
 import AlertDialogAction from '@/components/ui/alert-dialog/AlertDialogAction.vue'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 
 const router = useRouter()
 const route = useRoute()
