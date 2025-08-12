@@ -8,6 +8,7 @@ import FoodFormView from '@/views/FoodFormView.vue'
 import SalesView from '@/views/SalesView.vue'
 import SaleFormView from '@/views/SaleFormView.vue'
 import SaleDetailView from '@/views/SaleDetailView.vue'
+import SaleEditView from '@/views/SaleEditView.vue'
 
 const routes = [
   {
@@ -75,6 +76,13 @@ const routes = [
     path: '/sale/:id',
     component: SaleDetailView,
     name: 'Detalle venta',
+    props: true
+  },
+
+  {
+    path: '/sale/edit/:id',
+    component: SaleEditView,
+    name: 'Editar venta',
     props: true
   },
 ]

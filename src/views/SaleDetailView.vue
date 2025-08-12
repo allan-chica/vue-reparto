@@ -11,10 +11,7 @@
       </div>
 
       <div class="flex gap-2">
-        <Button size="icon" variant="outline" @click="isReceiptOpen = true">
-          <Printer />
-        </Button>
-        <Button size="icon" variant="outline">
+        <Button size="icon" variant="outline" @click="router.push(`/sale/edit/${sale.id}`)">
           <Pencil />
         </Button>
         <Button size="icon" variant="destructive" @click="viewDeleteDialog = true">
