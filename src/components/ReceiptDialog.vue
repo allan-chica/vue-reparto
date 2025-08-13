@@ -50,7 +50,19 @@
               </tr>
             </tbody>
           </table>
-          <div class="flex justify-between items-center mt-3">
+          <div v-if="hasDiscount" class="mt-3">
+            <div class="flex justify-between items-center">
+              <p class="ml-auto text-right text-base">Subtotal: ${{ formatPrice(totalPrice) }}</p>
+            </div>
+            <div class="flex justify-between items-center">
+              <p class="ml-auto text-right text-base">Descuento: -${{ formatPrice(totalPrice - sale.total) }}</p>
+            </div>
+            <div class="flex justify-between items-center">
+              <p class="text-xs">Documento NO válido como factura</p>
+              <p class="ml-auto text-right font-bold text-lg">Total: ${{ formatPrice(sale.total) }}</p>
+            </div>
+          </div>
+          <div v-else class="flex justify-between items-center mt-3">
             <p class="text-xs">Documento NO válido como factura</p>
             <p class="text-right font-bold text-lg">Total: ${{ formatPrice(sale.total) }}</p>
           </div>
@@ -82,7 +94,7 @@
               <tr>
                 <th class="text-sm border px-1.5 py-1 text-center" style="width: 1px">Cant.</th>
                 <th class="text-sm border px-1.5 py-1 text-left">Detalle</th>
-                <th class="text-sm border px-1.5 py-1 text-right" style="width: 1px">Precio Unit.</th>
+                <th class="text-sm border px-1.5 py-1 text-right text-nowrap" style="width: 1px">Precio Unit.</th>
                 <th class="text-sm border px-1.5 py-1 text-right" style="width: 1px">Importe</th>
               </tr>
             </thead>
@@ -99,7 +111,19 @@
               </tr>
             </tbody>
           </table>
-          <div class="flex justify-between items-center mt-3">
+          <div v-if="hasDiscount" class="mt-3">
+            <div class="flex justify-between items-center">
+              <p class="ml-auto text-right text-base">Subtotal: ${{ formatPrice(totalPrice) }}</p>
+            </div>
+            <div class="flex justify-between items-center">
+              <p class="ml-auto text-right text-base">Descuento: -${{ formatPrice(totalPrice - sale.total) }}</p>
+            </div>
+            <div class="flex justify-between items-center">
+              <p class="text-xs">Documento NO válido como factura</p>
+              <p class="ml-auto text-right font-bold text-lg">Total: ${{ formatPrice(sale.total) }}</p>
+            </div>
+          </div>
+          <div v-else class="flex justify-between items-center mt-3">
             <p class="text-xs">Documento NO válido como factura</p>
             <p class="text-right font-bold text-lg">Total: ${{ formatPrice(sale.total) }}</p>
           </div>
@@ -151,6 +175,18 @@ const sortedProducts = computed(() => {
   return [...props.sale.products].sort((a, b) =>
     a.name.toLowerCase().localeCompare(b.name.toLowerCase()
     ))
+})
+
+const totalPrice = computed(() => {
+  return props.sale.products.reduce((total, product) => {
+    return total + (product.price * product.quantity)
+  }, 0)
+})
+
+const discount = computed(() => props.sale.client.discount)
+const hasDiscount = computed(() => {
+  if (!discount.value) return
+  return discount.value > 0
 })
 
 const formatPrice = price => new Intl.NumberFormat('es-AR').format(price)

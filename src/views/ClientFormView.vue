@@ -17,6 +17,14 @@
         <Label for="phone">Telefono</Label>
         <Input id="phone" v-model="form.phone" type="number" />
       </div>
+      <div class="flex gap-3 items-center">
+        <Switch class="my-3" id="has-discount" v-model:model-value="hasDiscount" />
+        <Label for="has-discount">Tiene descuento</Label>
+        <div class="flex gap-1 items-center ml-3" v-if="hasDiscount">
+          <Input id="discount" v-model="form.discount" type="number" class="w-20" />
+          <Percent />
+        </div>
+      </div>
       <Button type="submit">{{ isEditing ? 'Editar' : 'Crear' }} Cliente</Button>
     </form>
   </div>
@@ -29,17 +37,20 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ChevronLeft } from 'lucide-vue-next'
+import { ChevronLeft, Percent } from 'lucide-vue-next'
+import { Switch } from '@/components/ui/switch'
 
 const store = useClientsStore()
 const router = useRouter()
 const route = useRoute()
 
-const form = ref({ name: '', phone: '' })
+const form = ref({ name: '', phone: '', discount: 0 })
 
 const isEditing = computed(() => route.name === 'Editar cliente')
 const editingId = computed(() => route.params.id)
 const emptyName = ref(false)
+
+const hasDiscount = ref(false)
 
 // Methods
 const saveClient = () => {
@@ -66,6 +77,9 @@ onMounted(async () => {
     const clientFromDb = await store.getClientById(Number(editingId.value))
     if (clientFromDb) {
       Object.assign(form.value, clientFromDb)
+      if (form.value.discount > 0) {
+        hasDiscount.value = true
+      }
     }
   }
 })

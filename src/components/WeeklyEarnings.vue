@@ -4,49 +4,6 @@
     <h3 class="text-lg font-semibold">Datos semanales:</h3>
 
     <!-- Stats -->
-    <!-- <div class="grid grid-cols-2 gap-2">
-      <div class="flex items-center gap-2 rounded-lg p-2.5 border">
-        <div
-          class="rounded-full p-2 flex items-center justify-center bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300">
-          <ChartNoAxesCombined size="16" />
-        </div>
-        <div>
-          <div class="text-muted-foreground text-sm">Total</div>
-          <div class="text-lg font-bold">${{ formatPrice(weeklyTotal) }}</div>
-        </div>
-      </div>
-      <div class="flex items-center gap-2 rounded-lg p-2.5 border">
-        <div
-          class="rounded-full p-2 flex items-center justify-center bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300">
-          <CircleOff size="16" />
-        </div>
-        <div>
-          <div class="text-muted-foreground text-sm">Sin pagar</div>
-          <div class="text-lg font-bold">${{ formatPrice(weeklyNotPaid) }}</div>
-        </div>
-      </div>
-      <div class="flex items-center gap-2 rounded-lg p-2.5 border">
-        <div
-          class="rounded-full p-2 flex items-center justify-center bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300">
-          <Banknote size="16" />
-        </div>
-        <div>
-          <div class="text-muted-foreground text-sm">Efectivo</div>
-          <div class="text-lg font-bold">${{ formatPrice(paymentSplit.cash) }}</div>
-        </div>
-      </div>
-      <div class="flex items-center gap-2 rounded-lg p-2.5 border">
-        <div
-          class="rounded-full p-2 flex items-center justify-center bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300">
-          <Wallet size="16" />
-        </div>
-        <div>
-          <div class="text-muted-foreground text-sm">Transferencia</div>
-          <div class="text-lg font-bold">${{ formatPrice(paymentSplit.debt) }}</div>
-        </div>
-      </div>
-    </div> -->
-
     <div class="grid grid-cols-2 gap-2">
       <div
         class="flex items-center gap-3 rounded-lg p-2.5 bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300">

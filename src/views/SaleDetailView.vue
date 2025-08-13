@@ -79,7 +79,21 @@
       <Button size="lg" variant="outline" @click="isReceiptOpen = true">
         <Printer /> Ver recibo
       </Button>
-      <div class="flex justify-between items-center text-lg font-semibold gap-1.5">
+      <div v-if="hasDiscount">
+        <div class="flex justify-between items-center gap-2">
+          <p>Subtotal:</p>
+          <p>${{ formatPrice(totalPrice) }}</p>
+        </div>
+        <div class="flex justify-between items-center gap-2">
+          <p>Descuento ({{ discount }}%):</p>
+          <p class="text-red-700 dark:text-red-300">-${{ formatPrice(totalPrice - sale.total) }}</p>
+        </div>
+        <div class="flex justify-between items-center text-lg font-semibold gap-2">
+          <p>Total:</p>
+          <p>${{ formatPrice(sale.total) }}</p>
+        </div>
+      </div>
+      <div v-else class="flex justify-between items-center text-lg font-semibold gap-1.5">
         <p>Total:</p>
         <p>${{ formatPrice(sale.total) }}</p>
       </div>
@@ -241,6 +255,20 @@ const paymentText = computed(() => {
   }
 })
 
+// Discount
+const totalPrice = computed(() => {
+  return sale.value?.products.reduce((total, product) => {
+    return total + (product.price * product.quantity)
+  }, 0)
+})
+
+const discount = ref(0)
+
+const hasDiscount = computed(() => {
+  if (!discount.value) return
+  return discount.value > 0
+})
+
 // Sync inputs in mixed mode
 watch(mixedCash, newVal => {
   if (paymentType.value == 'mix') {
@@ -296,6 +324,7 @@ onMounted(async () => {
       mixedCash.value = sale.value.payment.details.cash || ''
       mixedDebt.value = sale.value.payment.details.debt || ''
     }
+    discount.value = sale.value.client.discount
 
   } else {
     router.push('/sales')

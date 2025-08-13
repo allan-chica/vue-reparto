@@ -64,9 +64,23 @@
 
     <!-- Footer -->
     <div class="border-t pt-4">
-      <div class="flex justify-between items-center mb-2 text-lg font-semibold">
+      <div v-if="hasDiscount">
+        <div class="flex justify-end gap-3 items-center">
+          <p>Subtotal</p>
+          <p>${{ formatPrice(totalPrice) }}</p>
+        </div>
+        <div class="flex justify-end gap-3 items-center">
+          <p>Descuento ({{ discount }}%)</p>
+          <p class="text-red-700 dark:text-red-300">-${{ formatPrice(totalPrice - totalPriceWithDiscount) }}</p>
+        </div>
+        <div class="flex justify-end gap-3 items-center mb-4 text-lg font-semibold">
+          <p>Total</p>
+          <p>${{ formatPrice(totalPriceWithDiscount) }}</p>
+        </div>
+      </div>
+      <div v-else class="flex justify-end gap-3 items-center mb-4 text-lg font-semibold">
         <p>Total</p>
-        <p>${{ formatPrice(totalPrice) }}</p>
+        <p>${{ formatPrice(totalPriceWithDiscount) }}</p>
       </div>
       <div class="flex gap-2">
         <Button class="flex-1 mt-2" size="lg" variant="outline"
@@ -237,6 +251,14 @@ const filteredProducts = computed(() => {
 })
 const dialogSelectedProducts = ref([])
 
+// Setup -> Discount
+const discount = ref(0)
+const hasDiscount = computed(() => {
+  if (!discount.value) return
+  return discount.value > 0
+})
+const totalPriceWithDiscount = computed(() => totalPrice.value - (totalPrice.value * (discount.value / 100)))
+
 // Methods
 
 // Methods -> Client dialog
@@ -316,7 +338,7 @@ const removeProduct = product => {
 
 // Methods -> Save
 const saveSale = async () => {
-  sale.value.total = totalPrice.value
+  sale.value.total = hasDiscount.value ? totalPriceWithDiscount.value : totalPrice.value
   await saleStore.updateSale(JSON.parse(JSON.stringify(sale.value)))
   router.push(`/sale/${saleId.value}`)
 }
@@ -332,6 +354,7 @@ onMounted(async () => {
 
   if (dbSale) {
     Object.assign(sale.value, dbSale)
+    discount.value = sale.value.client.discount
   } else {
     router.push('/sales')
   }

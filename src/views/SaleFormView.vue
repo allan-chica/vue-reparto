@@ -99,7 +99,8 @@
           <div class="flex justify-between items-center p-4 max-w-xl mx-auto">
             <div>
               <p>{{ selectedProducts.length }} productos</p>
-              <p class="text-lg font-bold">${{ formatPrice(totalPrice) }}</p>
+              <p class="text-lg font-bold" :class="{ 'line-through': hasDiscount }">${{ formatPrice(totalPrice) }}</p>
+              <p class="text-lg font-bold" v-if="hasDiscount">${{ formatPrice(totalPriceWithDiscount) }}</p>
             </div>
             <Button :disabled="!selectedClient" @click="viewSummary = true">Ver resumen</Button>
           </div>
@@ -160,9 +161,23 @@
 
         <!-- Footer -->
         <div class="border-t pt-4 pb-6">
-          <div class="flex justify-between items-center mb-4 text-lg font-semibold">
+          <div v-if="hasDiscount">
+            <div class="flex justify-end gap-3 items-center">
+              <p>Subtotal</p>
+              <p>${{ formatPrice(totalPrice) }}</p>
+            </div>
+            <div class="flex justify-end gap-3 items-center">
+              <p>Descuento ({{ discount }}%)</p>
+              <p class="text-red-700 dark:text-red-300">-${{ formatPrice(totalPrice - totalPriceWithDiscount) }}</p>
+            </div>
+            <div class="flex justify-end gap-3 items-center mb-4 text-lg font-semibold">
+              <p>Total</p>
+              <p>${{ formatPrice(totalPriceWithDiscount) }}</p>
+            </div>
+          </div>
+          <div v-else class="flex justify-end gap-3 items-center mb-4 text-lg font-semibold">
             <p>Total</p>
-            <p>${{ formatPrice(totalPrice) }}</p>
+            <p>${{ formatPrice(totalPriceWithDiscount) }}</p>
           </div>
           <Button class="w-full mt-2" size="lg" @click="confirmSale">Confirmar venta</Button>
 
@@ -276,7 +291,15 @@ const totalPrice = computed(() => {
   }, 0)
 })
 
+const totalPriceWithDiscount = computed(() => totalPrice.value - (totalPrice.value * (discount.value / 100)))
+
 const completedDialogOpen = ref(false)
+
+const discount = computed(() => selectedClient.value?.discount)
+const hasDiscount = computed(() => {
+  if (!discount.value) return
+  return discount.value > 0
+})
 
 // Methods
 const selectClient = client => {
@@ -319,7 +342,7 @@ const formatPrice = price => {
 const confirmSale = async () => {
   const client = JSON.parse(JSON.stringify(selectedClient.value))
   const products = JSON.parse(JSON.stringify(selectedProducts.value))
-  const total = totalPrice.value
+  const total = hasDiscount.value ? totalPriceWithDiscount.value : totalPrice.value
   const date = Date.now()
 
   lastSale.value = { client, products, total, date }
