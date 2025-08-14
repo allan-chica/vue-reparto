@@ -193,7 +193,7 @@
       <AlertDialogContent class="max-w-lg">
         <AlertDialogHeader>
           <AlertDialogTitle class="text-lg font-semibold">Venta completada</AlertDialogTitle>
-          <AlertDialogDescription>La venta se gaurdó correctamente.</AlertDialogDescription>
+          <AlertDialogDescription>La venta se guardó correctamente.</AlertDialogDescription>
         </AlertDialogHeader>
         <div class="flex mt-4 gap-3">
           <Button class="flex-1" size="lg" variant="outline" @click="goToList">Volver a la

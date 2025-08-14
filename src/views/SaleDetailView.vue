@@ -64,7 +64,7 @@
               <p class="font-semibold text-lg">{{ product.name }}</p>
             </div>
             <div>
-              <p class="text-muted-foreground">1x ${{ formatPrice(product.price) }}</p>
+              <p class="text-muted-foreground">{{ product.quantity }}x ${{ formatPrice(product.price) }}</p>
               <p class="text-green-600 dark:text-green-500 font-semibold text-lg text-right">
                 ${{ formatPrice(product.price * product.quantity) }}
               </p>
@@ -102,8 +102,7 @@
     <AlertDialog v-model:open="viewPaymentDialog">
       <AlertDialogContent class="max-w-lg">
         <AlertDialogHeader>
-          <AlertDialogTitle class="text-lg font-semibold">Venta completada</AlertDialogTitle>
-          <AlertDialogDescription>La venta se gaurdó correctamente.</AlertDialogDescription>
+          <AlertDialogTitle class="text-lg font-semibold">Estado de pago</AlertDialogTitle>
         </AlertDialogHeader>
 
         <div>
