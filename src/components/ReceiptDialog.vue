@@ -73,7 +73,7 @@
       <div ref="receipt-ref" class="absolute top-[-9999px] left-[-9999px] w-lg">
         <div class="p-4 receipt bg-white text-black">
           <!-- Title -->
-          <div class="text-right font-bold text-stone-700 -mb-3">REMITO</div>
+          <div class="text-right font-bold text-stone-700 -mb-1">REMITO</div>
           <!-- Header -->
           <div class="flex justify-between items-end">
             <div>
