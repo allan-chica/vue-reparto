@@ -50,7 +50,7 @@
           class="w-6 h-6 flex items-center justify-center text-lg font-medium rounded-full transition-all duration-150 active:scale-110"
           :class="{
             'bg-primary text-primary-foreground shadow-sm': activeSection === letter,
-            'hover:bg-muted text-muted-foreground hover:text-foreground': activeSection !== letter,
+            'hover:bg-muted hover:text-foreground': activeSection !== letter,
             'animate-pulse': touchingLetter === letter
           }" @click="scrollToLetter(letter)" @mouseenter="handleLetterHover(letter)">
           {{ letter === '#' ? '#' : letter }}
