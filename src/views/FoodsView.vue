@@ -15,7 +15,7 @@
 
     <div class="flex-1 min-h-0">
       <AlphabetScroll :items="filteredProducts" label-key="name" id-key="id" scrollAreaClass="h-full"
-        letter-header-class="bg-background/95 backdrop-blur-sm py-2 px-3">
+        letter-header-class="bg-background py-2 px-3">
 
         <template #item="{ item }">
           <div class="flex justify-between items-center border p-3 rounded-md">

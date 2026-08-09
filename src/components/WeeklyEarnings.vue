@@ -14,27 +14,11 @@
         </div>
       </div>
       <div
-        class="flex items-center gap-3 rounded-lg p-2.5 bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300">
-        <CircleOff size="20" />
-        <div>
-          <div class="text-red-700 dark:text-red-300 text-sm -mb-1">Sin pagar</div>
-          <div class="text-lg font-bold">${{ formatPrice(weeklyNotPaid) }}</div>
-        </div>
-      </div>
-      <div
         class="flex items-center gap-3 rounded-lg p-2.5 bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300">
-        <Banknote size="20" />
+        <Coins size="20" />
         <div>
-          <div class="text-green-700 dark:text-green-300 text-sm -mb-1">Efectivo</div>
-          <div class="text-lg font-bold">${{ formatPrice(paymentSplit.cash) }}</div>
-        </div>
-      </div>
-      <div
-        class="flex items-center gap-3 rounded-lg p-2.5 bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300">
-        <Wallet size="20" />
-        <div>
-          <div class="text-sky-700 dark:text-sky-300 text-sm -mb-1">Transferencia</div>
-          <div class="text-lg font-bold">${{ formatPrice(paymentSplit.debt) }}</div>
+          <div class="text-green-700 dark:text-green-300 text-sm -mb-1">Ganancia</div>
+          <div class="text-lg font-bold">${{ formatPrice(ganancia) }}</div>
         </div>
       </div>
     </div>
@@ -45,14 +29,14 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useSalesStore } from '@/stores/sales'
-import { Banknote, ChartNoAxesCombined, CircleOff, Wallet } from 'lucide-vue-next'
+import { ChartNoAxesCombined, Coins } from 'lucide-vue-next'
 import { formatPrice } from '@/lib/utils'
 
 // State
 const saleStore = useSalesStore()
 
-// Single pass over all sales: filter to this week and accumulate every stat at
-// once, instead of filtering + reducing the array three separate times.
+// Single pass over the loaded sales: keep only the current week's sales and
+// sum their totals.
 const weeklyStats = computed(() => {
   const now = new Date()
   const startOfWeek = new Date(now)
@@ -60,7 +44,7 @@ const weeklyStats = computed(() => {
   startOfWeek.setHours(0, 0, 0, 0)
   const endOfWeek = startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000
 
-  const stats = { total: 0, notPaid: 0, cash: 0, debt: 0 }
+  let total = 0
 
   for (const sale of saleStore.sales) {
     if (!sale.date) continue
@@ -68,32 +52,19 @@ const weeklyStats = computed(() => {
     const t = new Date(sale.date).getTime()
     if (t < startOfWeek.getTime() || t >= endOfWeek) continue
 
-    stats.total += sale.total
-    if (!sale.isPaid) {
-      stats.notPaid += sale.total
-      continue
-    }
-
-    if (sale.payment.type == 'cash') {
-      stats.cash += sale.total
-    } else if (sale.payment.type == 'debt') {
-      stats.debt += sale.total
-    } else if (sale.payment.type == 'mix') {
-      stats.cash += sale.payment.details.cash || 0
-      stats.debt += sale.payment.details.debt || 0
-    }
+    total += sale.total
   }
 
-  return stats
+  return total
 })
 
-const weeklyTotal = computed(() => weeklyStats.value.total)
-const weeklyNotPaid = computed(() => weeklyStats.value.notPaid)
-const paymentSplit = computed(() => ({ cash: weeklyStats.value.cash, debt: weeklyStats.value.debt }))
+const weeklyTotal = computed(() => weeklyStats.value)
+
+// Ganancia = 10% of the week's total
+const ganancia = computed(() => weeklyTotal.value * 0.1)
 
 // Lifecycle hooks
-onMounted(async () => {
-  await saleStore.loadSales()
+onMounted(() => {
+  saleStore.loadSales()
 })
-
 </script>

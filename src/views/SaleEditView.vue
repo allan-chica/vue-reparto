@@ -142,7 +142,7 @@
         </div>
         <div class="flex-1 min-h-0">
           <AlphabetScroll :items="filteredProducts" label-key="name" id-key="id" :scrollAreaClass="'h-full max-h-96'"
-            letterHeaderClass="bg-background backdrop-blur-sm py-2 px-3 border-b">
+            letterHeaderClass="bg-background py-2 px-3 border-b">
             <template #item="{ item }">
               <div class="flex justify-between gap-3 p-3 rounded-md cursor-pointer" :class="{
                 'border border-transparent': !productSelected(item.id),

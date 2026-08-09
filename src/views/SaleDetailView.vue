@@ -197,7 +197,7 @@
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { ChevronLeft, Pencil, Trash2, Printer, ChevronRight } from 'lucide-vue-next'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, defineAsyncComponent } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { formatPrice, formatFullDate } from '@/lib/utils'
 import { useSalesStore } from '@/stores/sales'
@@ -206,8 +206,11 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import TabsContent from '@/components/ui/tabs/TabsContent.vue'
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Wallet, Banknote, Split } from 'lucide-vue-next'
-import ReceiptDialog from '@/components/ReceiptDialog.vue'
 import { ScrollArea } from '@/components/ui/scroll-area'
+
+// Lazy: the receipt bundle (html2canvas, ~224 kB) is downloaded in the
+// background while this view is open, so opening the receipt is instant.
+const ReceiptDialog = defineAsyncComponent(() => import('@/components/ReceiptDialog.vue'))
 import AlertDialogFooter from '@/components/ui/alert-dialog/AlertDialogFooter.vue'
 import AlertDialogCancel from '@/components/ui/alert-dialog/AlertDialogCancel.vue'
 import AlertDialogAction from '@/components/ui/alert-dialog/AlertDialogAction.vue'
@@ -317,5 +320,8 @@ onMounted(async () => {
   } else {
     router.push('/sales')
   }
+
+  // Warm up the receipt chunk now so the first open has no loading delay
+  import('@/components/ReceiptDialog.vue').catch(() => {})
 })
 </script>

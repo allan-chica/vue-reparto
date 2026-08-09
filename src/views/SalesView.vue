@@ -15,7 +15,7 @@
         <div v-for="group in groupedSalesArray" :key="group.day">
 
           <!-- Sticky date header -->
-          <div class="sticky top-0 bg-background/95 backdrop-blur-sm py-2 px-3 border-b">
+          <div class="sticky top-0 bg-background py-2 px-3 border-b">
             <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               {{ group.day }}
             </h3>
@@ -46,9 +46,11 @@
         <!-- Pagination: only render a slice of sales at a time -->
         <div v-if="hasMore" class="py-4 flex flex-col items-center gap-2">
           <p class="text-sm text-muted-foreground">
-            Mostrando {{ visibleSales.length }} de {{ sortedSales.length }} ventas
+            Mostrando {{ visibleSales.length }} de {{ saleStore.total }} ventas
           </p>
-          <Button variant="outline" @click="loadMore">Cargar más</Button>
+          <Button variant="outline" :disabled="loadingMore" @click="loadMore">
+            {{ loadingMore ? 'Cargando...' : 'Cargar más' }}
+          </Button>
         </div>
       </ScrollArea>
     </div>
@@ -101,10 +103,22 @@ const groupedSalesArray = computed(() => {
   }))
 })
 
-const hasMore = computed(() => visibleCount.value < sortedSales.value.length)
+// `total` comes from IndexedDB, so the count is exact even though only a
+// window of sales is kept in memory.
+const hasMore = computed(() => visibleCount.value < saleStore.total)
 
-const loadMore = () => {
-  visibleCount.value += PAGE_SIZE
+const loadingMore = ref(false)
+const loadMore = async () => {
+  loadingMore.value = true
+  try {
+    visibleCount.value += PAGE_SIZE
+    // Revealed more than is loaded? Pull the next page from IndexedDB.
+    if (visibleCount.value > saleStore.sales.length) {
+      await saleStore.loadOlderSales()
+    }
+  } finally {
+    loadingMore.value = false
+  }
 }
 
 // Methods

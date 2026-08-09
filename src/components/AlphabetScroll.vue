@@ -84,7 +84,7 @@ const props = defineProps({
   },
   letterHeaderClass: {
     type: String,
-    default: 'bg-background/95 backdrop-blur-sm py-2 px-3 border-b'
+    default: 'bg-background py-2 px-3 border-b'
   },
   enableHaptic: {
     type: Boolean,

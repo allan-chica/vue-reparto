@@ -59,7 +59,7 @@
       <!-- Products list -->
       <div class="flex-1 min-h-0">
         <AlphabetScroll :items="filteredProducts" label-key="name" id-key="id" scroll-area-class="h-full"
-          letter-header-class="bg-background/95 backdrop-blur-sm py-2 px-3">
+          letter-header-class="bg-background py-2 px-3">
           <template #item="{ item }">
             <div class="p-3 flex justify-between items-center border mb-3" :class="{
               'border-transparent': !getProductQuantity(item.id),
@@ -209,7 +209,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { ref, onMounted, computed, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, computed, onBeforeUnmount, watch, defineAsyncComponent } from 'vue'
 import { watchDebounced } from '@vueuse/core'
 import { searchAndSortByName, formatPrice } from '@/lib/utils'
 import { ChevronLeft, ChevronRight, Search, Plus, Minus, Trash } from 'lucide-vue-next'
@@ -232,7 +232,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue'
 import AlphabetScroll from '@/components/AlphabetScroll.vue'
-import ReceiptDialog from '@/components/ReceiptDialog.vue'
+
+// Lazy: the receipt bundle (html2canvas, ~224 kB) is downloaded in the
+// background while this form is open, so opening the receipt is instant.
+const ReceiptDialog = defineAsyncComponent(() => import('@/components/ReceiptDialog.vue'))
 import { useClientsStore } from '@/stores/clients'
 import { useProductsStore } from '@/stores/products'
 import { useSalesStore } from '@/stores/sales'
@@ -392,6 +395,9 @@ onMounted(() => {
   productStore.loadProducts()
 
   window.addEventListener('popstate', handlePopState)
+
+  // Warm up the receipt chunk now so the first open has no loading delay
+  import('@/components/ReceiptDialog.vue').catch(() => {})
 })
 
 onBeforeUnmount(() => {
