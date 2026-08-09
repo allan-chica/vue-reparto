@@ -1,7 +1,7 @@
 import { openDB } from "idb"
 
 const DB_NAME = 'reparto'
-const DB_VERSION = 6
+const DB_VERSION = 7
 
 export const db = await openDB(DB_NAME, DB_VERSION, {
   upgrade(db) {
