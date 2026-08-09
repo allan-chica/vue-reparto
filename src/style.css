@@ -121,3 +121,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* --- App shell: lock the page so only inner areas scroll -------------------
+   The document itself must never scroll. This kills pull-to-refresh, the
+   "weird scroll to reach the navbar" bug, and the layout growing past the
+   viewport. Content scrolls inside its own container; the nav bar stays
+   pinned to the bottom (native-app feel).
+
+   `height: 100%` is the baseline so older browsers (without `dvh`) still get
+   a fixed viewport-sized shell; `100dvh` below follows the URL bar on modern
+   phones. */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+
+@supports (height: 100dvh) {
+  #app {
+    height: 100dvh;
+  }
+}
