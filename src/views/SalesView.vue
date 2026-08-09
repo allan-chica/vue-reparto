@@ -32,7 +32,7 @@
               <StatusIcon :sale="sale" />
               <div>
                 <p class="text-lg font-semibold">{{ sale.client.name }}</p>
-                <p class="text-muted-foreground">{{ getSaleTime(sale) }}</p>
+                <p class="text-muted-foreground">{{ formatSaleTime(sale.date) }}</p>
               </div>
             </div>
 
@@ -41,6 +41,14 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- Pagination: only render a slice of sales at a time -->
+        <div v-if="hasMore" class="py-4 flex flex-col items-center gap-2">
+          <p class="text-sm text-muted-foreground">
+            Mostrando {{ visibleSales.length }} de {{ sortedSales.length }} ventas
+          </p>
+          <Button variant="outline" @click="loadMore">Cargar más</Button>
         </div>
       </ScrollArea>
     </div>
@@ -53,23 +61,33 @@ import { Button } from '@/components/ui/button'
 import { useRouter } from 'vue-router'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useSalesStore } from '@/stores/sales'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import StatusIcon from '@/components/StatusIcon.vue'
 import WeeklyEarnings from '@/components/WeeklyEarnings.vue'
+import { formatPrice, formatSaleDay, formatSaleTime } from '@/lib/utils'
 
 const router = useRouter()
 const saleStore = useSalesStore()
 
 const sales = computed(() => saleStore.sales)
 
-const groupedSalesArray = computed(() => {
-  // Sort newest first
-  const sorted = [...sales.value].sort((a, b) => b.date - a.date)
+// Render only the first PAGE_SIZE sales; the rest load on demand. This keeps
+// the DOM small (hundreds of sales would otherwise become hundreds of nodes,
+// which is what made scrolling/tapping laggy on low-end phones).
+const PAGE_SIZE = 50
+const visibleCount = ref(PAGE_SIZE)
 
-  // Group by day
-  const groups = sorted.reduce((acc, sale) => {
-    const date = new Date(sale.date)
-    const day = date.toLocaleDateString('es-ES', { weekday: 'long', month: 'long', day: 'numeric' })
+const sortedSales = computed(() => {
+  // Sort newest first
+  return [...sales.value].sort((a, b) => b.date - a.date)
+})
+
+const visibleSales = computed(() => sortedSales.value.slice(0, visibleCount.value))
+
+const groupedSalesArray = computed(() => {
+  // Group only the visible slice by day
+  const groups = visibleSales.value.reduce((acc, sale) => {
+    const day = formatSaleDay(sale.date)
     if (!acc[day]) {
       acc[day] = []
     }
@@ -83,16 +101,13 @@ const groupedSalesArray = computed(() => {
   }))
 })
 
+const hasMore = computed(() => visibleCount.value < sortedSales.value.length)
+
+const loadMore = () => {
+  visibleCount.value += PAGE_SIZE
+}
+
 // Methods
-const getSaleTime = sale => {
-  const date = new Date(sale.date)
-  return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
-}
-
-const formatPrice = price => {
-  return new Intl.NumberFormat('es-AR').format(price)
-}
-
 const isPaidStatus = (sale, status) => {
   return sale.isPaid && sale.payment.type === status
 }

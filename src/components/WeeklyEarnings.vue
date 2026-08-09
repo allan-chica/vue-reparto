@@ -46,65 +46,50 @@
 import { computed, onMounted } from 'vue'
 import { useSalesStore } from '@/stores/sales'
 import { Banknote, ChartNoAxesCombined, CircleOff, Wallet } from 'lucide-vue-next'
+import { formatPrice } from '@/lib/utils'
 
 // State
 const saleStore = useSalesStore()
 
-const weeklySales = computed(() => saleStore.sales.filter(sale => sale.date && isThisWeek(sale.date)))
-
-const weeklyTotal = computed(() => {
-  return weeklySales.value.reduce((sum, sale) => {
-    if (!sale.isPaid) return sum
-    return sum + sale.total
-  }, 0)
-})
-
-const weeklyNotPaid = computed(() => {
-  return weeklySales.value.reduce((sum, sale) => {
-    if (sale.isPaid) return sum
-    return sum + sale.total
-  }, 0)
-})
-
-// const earnings = computed(() => weeklyTotal.value * 0.1)
-
-const paymentSplit = computed(() => {
-  let cash = 0
-  let debt = 0
-
-  weeklySales.value.forEach(sale => {
-    if (!sale.isPaid) return
-
-    if (sale.payment.type == 'cash') {
-      cash += sale.total
-    } else if ((sale.payment.type == 'debt')) {
-      debt += sale.total
-    } else if ((sale.payment.type == 'mix')) {
-      cash += sale.payment.details.cash || 0
-      debt += sale.payment.details.debt || 0
-    }
-  })
-
-  return { cash, debt }
-})
-
-// Methods
-const isThisWeek = date => {
-  const d = new Date(date)
+// Single pass over all sales: filter to this week and accumulate every stat at
+// once, instead of filtering + reducing the array three separate times.
+const weeklyStats = computed(() => {
   const now = new Date()
   const startOfWeek = new Date(now)
   startOfWeek.setDate(now.getDate() - now.getDay()) // Sunday as start
   startOfWeek.setHours(0, 0, 0, 0)
+  const endOfWeek = startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000
 
-  const endOfWeek = new Date(startOfWeek)
-  endOfWeek.setDate(startOfWeek.getDate() + 7)
+  const stats = { total: 0, notPaid: 0, cash: 0, debt: 0 }
 
-  return d >= startOfWeek && d < endOfWeek
-}
+  for (const sale of saleStore.sales) {
+    if (!sale.date) continue
 
-const formatPrice = price => {
-  return new Intl.NumberFormat('es-AR').format(price)
-}
+    const t = new Date(sale.date).getTime()
+    if (t < startOfWeek.getTime() || t >= endOfWeek) continue
+
+    stats.total += sale.total
+    if (!sale.isPaid) {
+      stats.notPaid += sale.total
+      continue
+    }
+
+    if (sale.payment.type == 'cash') {
+      stats.cash += sale.total
+    } else if (sale.payment.type == 'debt') {
+      stats.debt += sale.total
+    } else if (sale.payment.type == 'mix') {
+      stats.cash += sale.payment.details.cash || 0
+      stats.debt += sale.payment.details.debt || 0
+    }
+  }
+
+  return stats
+})
+
+const weeklyTotal = computed(() => weeklyStats.value.total)
+const weeklyNotPaid = computed(() => weeklyStats.value.notPaid)
+const paymentSplit = computed(() => ({ cash: weeklyStats.value.cash, debt: weeklyStats.value.debt }))
 
 // Lifecycle hooks
 onMounted(async () => {

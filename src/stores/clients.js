@@ -3,11 +3,15 @@ import { db } from '@/lib/db'
 
 export const useClientsStore = defineStore('clients', {
   state: () => ({
-    clients: []
+    clients: [],
+    // Guard so multiple components mounting at once don't re-read IndexedDB
+    loaded: false
   }),
 
   actions: {
     async loadClients() {
+      if (this.loaded) return
+      this.loaded = true
       this.clients = await db.getAll('clients')
     },
 

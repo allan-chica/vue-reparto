@@ -77,7 +77,9 @@
 
 <script setup>
 import { onMounted, computed, ref } from 'vue'
+import { watchDebounced } from '@vueuse/core'
 import { useProductsStore } from '@/stores/products'
+import { searchAndSortByName, formatPrice } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -103,18 +105,16 @@ const products = computed(() => store.products)
 const openDialog = ref(false)
 const productToDelete = ref(null)
 
-const filteredProducts = computed(() => {
-  const query = searchQuery.value.toLowerCase().trim()
-  const filtered = !query
-    ? products.value
-    : products.value.filter(product =>
-      product.name.toLowerCase().includes(query)
-    )
+// Debounce keystrokes so filtering/sorting (and AlphabetScroll regrouping)
+// only happens after the user pauses, instead of on every single keypress.
+const debouncedSearchQuery = ref('')
+watchDebounced(searchQuery, () => {
+  debouncedSearchQuery.value = searchQuery.value
+}, { debounce: 250 })
 
-  return filtered.sort((a, b) =>
-    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  )
-})
+const filteredProducts = computed(() =>
+  searchAndSortByName(products.value, debouncedSearchQuery.value)
+)
 
 const dialogDelete = product => {
   productToDelete.value = product
@@ -123,10 +123,6 @@ const dialogDelete = product => {
 
 const deleteProduct = id => {
   store.deleteProduct(id)
-}
-
-const formatPrice = price => {
-  return new Intl.NumberFormat('es-AR').format(price)
 }
 
 // Mounted

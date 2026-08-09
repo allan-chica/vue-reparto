@@ -158,6 +158,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Download, Share2 } from 'lucide-vue-next'
+import { formatPrice, formatReceiptDate } from '@/lib/utils'
 
 // Props
 const props = defineProps({
@@ -189,19 +190,7 @@ const hasDiscount = computed(() => {
   return discount.value > 0
 })
 
-const formatPrice = price => new Intl.NumberFormat('es-AR').format(price)
-
-const date = computed(() => {
-  const dateObj = new Date(props.sale.date)
-  return dateObj.toLocaleString('es-AR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  })
-})
+const date = computed(() => formatReceiptDate(props.sale.date))
 
 const generateReceiptImage = async () => {
   if (!receiptRef.value) return null

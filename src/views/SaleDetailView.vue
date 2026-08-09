@@ -199,6 +199,7 @@ import { Switch } from '@/components/ui/switch'
 import { ChevronLeft, Pencil, Trash2, Printer, ChevronRight } from 'lucide-vue-next'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { formatPrice, formatFullDate } from '@/lib/utils'
 import { useSalesStore } from '@/stores/sales'
 import StatusIcon from '@/components/StatusIcon.vue'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -230,15 +231,7 @@ const paymentType = ref('cash') // 'cash' | 'debt' | 'mix'
 const mixedCash = ref('')
 const mixedDebt = ref('')
 
-const date = computed(() => {
-  return new Date(sale.value.date).toLocaleString('es-ES', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-})
+const date = computed(() => formatFullDate(sale.value.date))
 
 const paymentText = computed(() => {
   if (sale.value.isPaid) {
@@ -305,10 +298,6 @@ const savePayment = async () => {
 const deletePayment = async () => {
   await saleStore.deleteSale(sale.value.id)
   router.push('/sales')
-}
-
-const formatPrice = price => {
-  return new Intl.NumberFormat('es-AR').format(price)
 }
 
 onMounted(async () => {

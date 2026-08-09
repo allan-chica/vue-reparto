@@ -4,10 +4,14 @@ import { db } from '@/lib/db'
 export const useProductsStore = defineStore('products', {
   state: () => ({
     products: [],
+    // Guard so multiple components mounting at once don't re-read IndexedDB
+    loaded: false
   }),
 
   actions: {
     async loadProducts() {
+      if (this.loaded) return
+      this.loaded = true
       this.products = await db.getAll('products')
     },
 

@@ -210,6 +210,8 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref, onMounted, computed, onBeforeUnmount, watch } from 'vue'
+import { watchDebounced } from '@vueuse/core'
+import { searchAndSortByName, formatPrice } from '@/lib/utils'
 import { ChevronLeft, ChevronRight, Search, Plus, Minus, Trash } from 'lucide-vue-next'
 import {
   Dialog,
@@ -243,34 +245,30 @@ const saleStore = useSalesStore()
 const clients = computed(() => clientStore.clients)
 const clientSearchQuery = ref('')
 const selectedClient = ref(null)
-const filteredClients = computed(() => {
-  const query = clientSearchQuery.value.toLowerCase().trim()
-  const filtered = !query
-    ? clients.value
-    : clients.value.filter(client =>
-      client.name.toLowerCase().includes(query)
-    )
-
-  return filtered.sort((a, b) =>
-    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  )
-})
 const clientDialogOpen = ref(false)
 
 const products = computed(() => productStore.products)
 const productSearchQuery = ref('')
-const filteredProducts = computed(() => {
-  const query = productSearchQuery.value.toLowerCase().trim()
-  const filtered = !query
-    ? products.value
-    : products.value.filter(product =>
-      product.name.toLowerCase().includes(query)
-    )
 
-  return filtered.sort((a, b) =>
-    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  )
-})
+// Debounce dialog searches: AlphabetScroll regroups + re-sorts on every change,
+// so wait for the user to pause typing before recomputing.
+const debouncedClientQuery = ref('')
+watchDebounced(clientSearchQuery, () => {
+  debouncedClientQuery.value = clientSearchQuery.value
+}, { debounce: 250 })
+
+const debouncedProductQuery = ref('')
+watchDebounced(productSearchQuery, () => {
+  debouncedProductQuery.value = productSearchQuery.value
+}, { debounce: 250 })
+
+const filteredClients = computed(() =>
+  searchAndSortByName(clients.value, debouncedClientQuery.value)
+)
+
+const filteredProducts = computed(() =>
+  searchAndSortByName(products.value, debouncedProductQuery.value)
+)
 
 const isEditing = ref(false)
 const selectedProducts = ref([])
@@ -333,10 +331,6 @@ const removeProduct = (product) => {
 const getProductQuantity = (productId) => {
   const product = selectedProducts.value.find(p => p.id === productId)
   return product ? product.quantity : 0
-}
-
-const formatPrice = price => {
-  return new Intl.NumberFormat('es-AR').format(price)
 }
 
 const confirmSale = async () => {

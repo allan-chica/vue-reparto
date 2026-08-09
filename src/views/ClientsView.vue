@@ -78,7 +78,9 @@
 
 <script setup>
 import { onMounted, computed, ref } from 'vue'
+import { watchDebounced } from '@vueuse/core'
 import { useClientsStore } from '@/stores/clients'
+import { searchAndSortByName } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -104,18 +106,16 @@ const clients = computed(() => store.clients)
 const openDialog = ref(false)
 const clientToDelete = ref(null)
 
-const filteredClients = computed(() => {
-  const query = searchQuery.value.toLowerCase().trim()
-  const filtered = !query
-    ? clients.value
-    : clients.value.filter(client =>
-      client.name.toLowerCase().includes(query)
-    )
+// Debounce keystrokes so filtering/sorting (and AlphabetScroll regrouping)
+// only happens after the user pauses, instead of on every single keypress.
+const debouncedSearchQuery = ref('')
+watchDebounced(searchQuery, () => {
+  debouncedSearchQuery.value = searchQuery.value
+}, { debounce: 250 })
 
-  return filtered.sort((a, b) =>
-    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  )
-})
+const filteredClients = computed(() =>
+  searchAndSortByName(clients.value, debouncedSearchQuery.value)
+)
 
 const dialogDelete = client => {
   clientToDelete.value = client

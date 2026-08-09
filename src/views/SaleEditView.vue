@@ -178,6 +178,8 @@ import { useClientsStore } from '@/stores/clients'
 import { useProductsStore } from '@/stores/products'
 import { useSalesStore } from '@/stores/sales'
 import { computed, onMounted, ref } from 'vue'
+import { watchDebounced } from '@vueuse/core'
+import { searchAndSortByName, formatPrice } from '@/lib/utils'
 import { ChevronLeft, ChevronRight, Circle, CircleCheckBig, CircleMinus, Minus, Plus, Search, Trash } from 'lucide-vue-next'
 import AlphabetScroll from '@/components/AlphabetScroll.vue'
 
@@ -220,36 +222,32 @@ const sortedSelectedProducts = computed(() => {
 const clientDialogOpen = ref(false)
 const clients = computed(() => clientStore.clients)
 const clientSearchQuery = ref('')
-const filteredClients = computed(() => {
-  const query = clientSearchQuery.value.toLowerCase().trim()
-  const filtered = !query
-    ? clients.value
-    : clients.value.filter(client =>
-      client.name.toLowerCase().includes(query)
-    )
-
-  return filtered.sort((a, b) =>
-    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  )
-})
 
 // Setup -> Products
 const productsDialogOpen = ref(false)
 const products = computed(() => productStore.products)
 const productSearchQuery = ref('')
-const filteredProducts = computed(() => {
-  const query = productSearchQuery.value.toLowerCase().trim()
-  const filtered = !query
-    ? products.value
-    : products.value.filter(product =>
-      product.name.toLowerCase().includes(query)
-    )
-
-  return filtered.sort((a, b) =>
-    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  )
-})
 const dialogSelectedProducts = ref([])
+
+// Debounce dialog searches: AlphabetScroll regroups + re-sorts on every change,
+// so wait for the user to pause typing before recomputing.
+const debouncedClientQuery = ref('')
+watchDebounced(clientSearchQuery, () => {
+  debouncedClientQuery.value = clientSearchQuery.value
+}, { debounce: 250 })
+
+const debouncedProductQuery = ref('')
+watchDebounced(productSearchQuery, () => {
+  debouncedProductQuery.value = productSearchQuery.value
+}, { debounce: 250 })
+
+const filteredClients = computed(() =>
+  searchAndSortByName(clients.value, debouncedClientQuery.value)
+)
+
+const filteredProducts = computed(() =>
+  searchAndSortByName(products.value, debouncedProductQuery.value)
+)
 
 // Setup -> Discount
 const discount = ref(0)
@@ -341,11 +339,6 @@ const saveSale = async () => {
   sale.value.total = hasDiscount.value ? totalPriceWithDiscount.value : totalPrice.value
   await saleStore.updateSale(JSON.parse(JSON.stringify(sale.value)))
   router.push(`/sale/${saleId.value}`)
-}
-
-// Methods -> Helper
-const formatPrice = price => {
-  return new Intl.NumberFormat('es-AR').format(price)
 }
 
 // Lifecycle hooks

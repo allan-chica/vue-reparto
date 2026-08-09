@@ -7,7 +7,7 @@
           <div v-for="section in sectionsData" :key="section.letter" class="mb-2">
 
             <!-- Invisible scroll target -->
-            <div :ref="el => letterRefs[section.letter] = el" class="h-0" :data-letter="section.letter"></div>
+            <div :ref="setLetterRef" class="h-0" :data-letter="section.letter"></div>
 
             <!-- Letter header -->
             <div class="sticky top-0" :class="letterHeaderClass">
@@ -151,6 +151,14 @@ const getItemLabel = (item) => {
 
 const getItemKey = (item) => {
   return typeof item === 'string' ? item : item[props.idKey] || item
+}
+
+// Stable ref callback: a new inline arrow function per render would make Vue
+// detach + re-attach every letter target on each render (visible as churn on
+// low-end devices). Reading the letter from the element's dataset keeps the
+// callback stable across renders.
+const setLetterRef = el => {
+  if (el) letterRefs.value[el.dataset.letter] = el
 }
 
 const scrollToLetter = async (letter) => {

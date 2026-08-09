@@ -1,14 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import MainLayout from '@/layouts/MainLayout.vue'
-import ClientsView from '@/views/ClientsView.vue'
-import ClientFormView from '@/views/ClientFormView.vue'
-import FoodsView from '@/views/FoodsView.vue'
-import FoodFormView from '@/views/FoodFormView.vue'
-import SalesView from '@/views/SalesView.vue'
-import SaleFormView from '@/views/SaleFormView.vue'
-import SaleDetailView from '@/views/SaleDetailView.vue'
-import SaleEditView from '@/views/SaleEditView.vue'
+
+// Lazy-load views: on a low-end phone, parsing every view on startup is
+// wasteful. These chunks are fetched (and parsed) only when their route is
+// actually opened.
+const ClientsView = () => import('@/views/ClientsView.vue')
+const ClientFormView = () => import('@/views/ClientFormView.vue')
+const FoodsView = () => import('@/views/FoodsView.vue')
+const FoodFormView = () => import('@/views/FoodFormView.vue')
+const SalesView = () => import('@/views/SalesView.vue')
+const SaleFormView = () => import('@/views/SaleFormView.vue')
+const SaleDetailView = () => import('@/views/SaleDetailView.vue')
+const SaleEditView = () => import('@/views/SaleEditView.vue')
 
 const routes = [
   {
